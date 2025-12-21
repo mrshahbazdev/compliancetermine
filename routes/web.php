@@ -17,7 +17,6 @@ use App\Http\Controllers\Tenant\Admin\{
     UserManagementController,
     SettingsController
 };
-
 /*
 |--------------------------------------------------------------------------
 | Public Central Routes
@@ -68,7 +67,9 @@ Route::prefix('tenant/{tenantId}')
             Route::resource('employees', EmployeeController::class);
 
             // PHASE 3 & 4 (Upcoming): Trainings & Calendar
-            Route::resource('trainings', TrainingController::class);
+           // Phase 3: Trainings Management
+            Route::get('/employees/{employee}/trainings', [TrainingController::class, 'index'])->name('trainings.employee.index');
+            Route::post('/employees/{employee}/trainings', [TrainingController::class, 'store'])->name('trainings.store');
             Route::get('/calendar', [TrainingController::class, 'calendar'])->name('calendar');
 
             // --- TENANT ADMIN ROUTES ---
