@@ -114,9 +114,27 @@
                                 </td>
                                 <td class="px-6 py-4 text-slate-600 text-sm font-medium">{{ $training->expiry_date->format('d.m.Y') }}</td>
                                 <td class="px-6 py-4 text-right">
-                                    <span class="px-3 py-1 {{ $training->expiry_date->diffInDays(now()) < 90 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }} text-[10px] font-black rounded-full uppercase tracking-tighter">
-                                        {{ $training->expiry_date->diffInDays(now()) }} Tage
-                                    </span>
+                                    @php
+                                        // Aaj ki date aur expiry ka farq nikaal kar round kar rahe hain
+                                        $daysLeft = round(now()->diffInDays($training->expiry_date, false));
+                                    @php
+
+                                    @if($daysLeft < 0)
+                                        {{-- Expired Case --}}
+                                        <span class="px-3 py-1 bg-red-600 text-white text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                            Abgelaufen ({{ abs($daysLeft) }} Tage)
+                                        </span>
+                                    @elseif($daysLeft <= 90)
+                                        {{-- Critical Case --}}
+                                        <span class="px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                            Kritisch ({{ $daysLeft }} Tage)
+                                        </span>
+                                    @else
+                                        {{-- OK Case --}}
+                                        <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                            {{ $daysLeft }} Tage verbleibend
+                                        </span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
