@@ -8,17 +8,17 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail; // Email support ke liye
+use App\Mail\TrainingPlannedNotification; // Mail class
 
 class TrainingController extends Controller
 {
     /**
-     * Certificate ko Browser mein View karne ke liye (Download nahi)
+     * Certificate ko Browser mein View karne ke liye
      */
     public function viewCertificate(string $tenantId, Training $training)
     {
         $user = Auth::user();
-        
-        // Security Check: Kya user manager ya admin hai?
         if (!$user->isAdmin() && !$training->employee->responsibles->contains($user->id)) {
             abort(403);
         }
@@ -30,7 +30,6 @@ class TrainingController extends Controller
         $path = Storage::disk('public')->path($training->certificate_path);
         $mimeType = Storage::disk('public')->mimeType($training->certificate_path);
 
-        // 'inline' header file ko browser mein open karta hai
         return response()->file($path, [
             'Content-Type' => $mimeType,
             'Content-Disposition' => 'inline; filename="'.basename($path).'"'
@@ -43,12 +42,10 @@ class TrainingController extends Controller
     public function index(string $tenantId, string $employeeId)
     {
         $user = Auth::user();
-        
         $employee = Employee::with(['trainings' => function($q) {
             $q->orderBy('expiry_date', 'desc');
         }, 'trainings.category'])->findOrFail($employeeId);
 
-        // SECURITY CHECK
         if (!$user->isAdmin()) {
             $isAssigned = $employee->responsibles()->where('user_id', $user->id)->exists();
             if (!$isAssigned) {
@@ -56,9 +53,7 @@ class TrainingController extends Controller
             }
         }
 
-        // Data Fix: Ensure formatting works on existing records
         foreach($employee->trainings as $training) {
-            // Hum hamesha last_event_date hi use karenge kyunki database mein wahi hai
             $training->training_date = $training->last_event_date;
         }
 
@@ -67,49 +62,56 @@ class TrainingController extends Controller
     }
 
     /**
-     * Store: Nayi training save ya plan karna
+     * Store: Training save karna aur Manager ko Email bhejna
      */
     public function store(Request $request, string $tenantId, string $employeeId)
-{
-    
-    $request->validate([
-        'category_id' => 'required|exists:categories,id',
-        'last_event_date' => 'required|date', // Match with Blade
-        'duration_days' => 'nullable|integer|min:1',
-        'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit
-    ]);
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'last_event_date' => 'required|date',
+            'duration_days' => 'nullable|integer|min:1',
+            'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480',
+        ]);
 
-    try {
-        $trainingDate = \Carbon\Carbon::parse($request->last_event_date);
-        
-        $filePath = null;
-        if ($request->hasFile('certificate')) {
-            $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+        try {
+            $employee = Employee::findOrFail($employeeId);
+            $trainingDate = Carbon::parse($request->last_event_date);
+            
+            $filePath = null;
+            if ($request->hasFile('certificate')) {
+                $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+            }
+
+            $status = $filePath ? 'completed' : 'planned';
+            $days = (int) ($request->duration_days ?? 365); 
+            $expiryDate = $trainingDate->copy()->addDays($days);
+
+            // Training Create
+            $training = new Training();
+            $training->employee_id = $employeeId;
+            $training->category_id = $request->category_id;
+            $training->last_event_date = $trainingDate;
+            $training->expiry_date = $expiryDate;
+            $training->duration_days = $days;
+            $training->certificate_path = $filePath;
+            $training->status = $status;
+            $training->save();
+
+            // TRIGGER EMAIL: Agar training plan hui hai, toh managers ko notify karein
+            if ($status === 'planned') {
+                $managers = $employee->responsibles; // Responsible users (Managers)
+                foreach ($managers as $manager) {
+                    Mail::to($manager->email)->send(new TrainingPlannedNotification($training));
+                }
+            }
+
+            $msg = $status === 'planned' ? 'Schulung geplant und Manager benachrichtigt!' : 'Gespeichert!';
+            return redirect()->back()->with('success', $msg);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Fehler: ' . $e->getMessage()]);
         }
-
-        $status = $filePath ? 'completed' : 'planned';
-        $days = (int) ($request->duration_days ?? 365); 
-        $expiryDate = $trainingDate->copy()->addDays($days);
-
-        // CREATE KI JAGAH SAVE METHOD USE KAREIN DEBUGGING KE LIYE
-        $training = new \App\Models\Training();
-        $training->employee_id = $employeeId;
-        $training->category_id = $request->category_id;
-        $training->last_event_date = $trainingDate;
-        $training->expiry_date = $expiryDate;
-        $training->duration_days = $days;
-        $training->certificate_path = $filePath;
-        $training->status = $status;
-        
-        $training->save(); // Agar yahan masla hoga toh catch block pakad lega
-
-        return redirect()->back()->with('success', 'Gespeichert!');
-
-    } catch (\Exception $e) {
-        // AGAR KOI BHI ERROR AAYA TO YE SCREEN PAR SHOW HOGA
-        dd("Database Error: " . $e->getMessage());
     }
-}
 
     /**
      * Calendar View
