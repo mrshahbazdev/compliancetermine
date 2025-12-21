@@ -79,7 +79,7 @@ class TrainingController extends Controller
         ]);
 
         $category = Category::findOrFail($request->category_id);
-        $trainingDate = Carbon::parse($request->training_date);
+        $trainingDate = \Carbon\Carbon::parse($request->training_date);
         
         // File Upload Logic
         $filePath = null;
@@ -87,22 +87,21 @@ class TrainingController extends Controller
             $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
         }
 
-        // Logic: Agar certificate hai toh 'completed', warna 'planned'
+        // Status: Certificate hai to completed, warna planned
         $status = $filePath ? 'completed' : 'planned';
 
-        // Expiry Calculation
-        // Agar duration_days form se nahi aaye, toh Category ki default validity use karein (agar model mein ho)
-        $days = $request->duration_days ?? 365; 
+        // FIX: Typecast to integer to avoid Carbon error
+        $days = (int) ($request->duration_days ?? 365); 
         $expiryDate = $trainingDate->copy()->addDays($days);
 
-        Training::create([
+        \App\Models\Training::create([
             'employee_id' => $employeeId,
             'category_id' => $request->category_id,
-            'training_date' => $trainingDate, // last_event_date ki jagah training_date use karein
+            'training_date' => $trainingDate,
             'expiry_date' => $expiryDate,
             'duration_days' => $days,
             'certificate_path' => $filePath,
-            'status' => $status, // 'completed' or 'planned'
+            'status' => $status,
         ]);
 
         $msg = $status === 'planned' ? 'Schulung wurde erfolgreich geplant.' : 'Training und Zertifikat wurden gespeichert.';
