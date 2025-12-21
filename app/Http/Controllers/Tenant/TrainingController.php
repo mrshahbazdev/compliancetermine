@@ -31,7 +31,7 @@ class TrainingController extends Controller
         ]);
 
         $lastEvent = Carbon::parse($request->last_event_date);
-        $expiryDate = $lastEvent->copy()->addDays($request->duration_days);
+        $expiryDate = $lastEvent->copy()->addDays((int) $request->duration_days);
 
         Training::updateOrCreate(
             [
