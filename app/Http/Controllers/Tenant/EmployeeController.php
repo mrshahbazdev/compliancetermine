@@ -30,8 +30,18 @@ class EmployeeController extends Controller
     }
 
     public function index() {
-        // Filtered query use kar rahe hain
-        $employees = $this->getFilteredEmployeesQuery()->with('responsibles')->get();
+        $user = Auth::user();
+        
+        if ($user->isAdmin()) {
+            // Admin sab dekh sakta hai
+            $employees = Employee::with('responsibles')->get();
+        } else {
+            // Muhammad Noor sirf apne log dekhega
+            $employees = Employee::whereHas('responsibles', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with('responsibles')->get();
+        }
+
         return view('tenant.employees.index', compact('employees'));
     }
 

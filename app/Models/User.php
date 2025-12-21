@@ -35,7 +35,11 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
-
+    public function isAdmin()
+    {
+        // Check karein ke aapka role column 'admin' value contain karta hai
+        return $this->role === 'admin'; 
+    }
     /**
      * RELATIONSHIP: New Training Tool
      * Isse pata chalega ke ye user kin kin Employees ka "Responsible Person" hai.
