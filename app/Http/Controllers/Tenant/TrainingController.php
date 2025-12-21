@@ -76,7 +76,7 @@ class TrainingController extends Controller
         'category_id' => 'required|exists:categories,id',
         'last_event_date' => 'required|date', // Match with Blade
         'duration_days' => 'nullable|integer|min:1',
-        'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+        'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit
     ]);
 
     try {
