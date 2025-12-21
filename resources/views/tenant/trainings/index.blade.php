@@ -135,12 +135,12 @@
                                     @endif
                                 </td>
                                 <td class="px-8 py-5 text-sm text-slate-500 font-medium">
-                                    {{ $training->training_date->format('d.m.Y') }}
+                                    {{ ($training->training_date ?? $training->last_event_date)->format('d.m.Y') }}
                                 </td>
                                 <td class="px-8 py-5">
                                     <div class="flex flex-col">
                                         <span class="text-sm font-black {{ $isExpired ? 'text-red-600' : 'text-slate-700' }}">
-                                            {{ $training->expiry_date->format('d.m.Y') }}
+                                            {{ optional($training->expiry_date)->format('d.m.Y') ?? 'N/A' }}
                                         </span>
                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Frist</span>
                                     </div>

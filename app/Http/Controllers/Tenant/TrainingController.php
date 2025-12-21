@@ -17,16 +17,24 @@ class TrainingController extends Controller
     {
         $user = Auth::user();
         
-        // Employee with history
+        // Employee with history fetch karein
         $employee = Employee::with(['trainings' => function($q) {
             $q->orderBy('expiry_date', 'desc');
         }, 'trainings.category'])->findOrFail($employeeId);
 
-        // SECURITY CHECK
+        // SECURITY CHECK: Manager access validation
         if (!$user->isAdmin()) {
             $isAssigned = $employee->responsibles()->where('user_id', $user->id)->exists();
             if (!$isAssigned) {
                 abort(403, 'Sie sind nicht für diesen Mitarbeiter verantwortlich.');
+            }
+        }
+
+        // DATA NORMALIZATION: Purane data ke liye fallback logic
+        // Agar database mein training_date null hai, toh purana last_event_date use karein
+        foreach($employee->trainings as $training) {
+            if (!$training->training_date && $training->last_event_date) {
+                $training->training_date = $training->last_event_date;
             }
         }
 
