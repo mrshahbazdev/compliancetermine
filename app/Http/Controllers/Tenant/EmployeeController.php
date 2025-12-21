@@ -15,7 +15,6 @@ class EmployeeController extends Controller
     }
 
     public function create() {
-        // Sirf wo users dikhayen jo 'responsible' role ya relevant ho sakte hain
         $users = User::all(); 
         return view('tenant.employees.create', compact('users'));
     }
@@ -24,7 +23,7 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required|string',
             'dob' => 'required|date',
-            'responsible_ids' => 'required|array|min:1|max:3', // Max 3 responsible persons
+            'responsible_ids' => 'required|array|min:1|max:3',
         ]);
 
         $employee = Employee::create([
@@ -32,10 +31,41 @@ class EmployeeController extends Controller
             'dob' => $request->dob,
         ]);
 
-        // Responsible persons ko link karna (Pivot table)
         $employee->responsibles()->sync($request->responsible_ids);
 
         return redirect()->route('tenant.employees.index', ['tenantId' => request()->route('tenantId')])
-                 ->with('success', 'Mitarbeiter angelegt.');
+                         ->with('success', 'Mitarbeiter angelegt.');
+    }
+
+    // --- YE METHODS ADD KAREIN ---
+
+    public function edit(string $tenantId, Employee $employee) {
+        $users = User::all();
+        $selectedResponsibles = $employee->responsibles->pluck('id')->toArray();
+        return view('tenant.employees.edit', compact('employee', 'users', 'selectedResponsibles'));
+    }
+
+    public function update(Request $request, string $tenantId, Employee $employee) {
+        $request->validate([
+            'name' => 'required|string',
+            'dob' => 'required|date',
+            'responsible_ids' => 'required|array|min:1|max:3',
+        ]);
+
+        $employee->update([
+            'name' => $request->name,
+            'dob' => $request->dob,
+        ]);
+
+        $employee->responsibles()->sync($request->responsible_ids);
+
+        return redirect()->route('tenant.employees.index', ['tenantId' => $tenantId])
+                         ->with('success', 'Mitarbeiter aktualisiert.');
+    }
+
+    public function destroy(string $tenantId, Employee $employee) {
+        $employee->delete(); // Pivot table entry automatically delete ho jayegi cascade se
+        return redirect()->route('tenant.employees.index', ['tenantId' => $tenantId])
+                         ->with('success', 'Mitarbeiter gelöscht.');
     }
 }
