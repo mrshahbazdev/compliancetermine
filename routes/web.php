@@ -65,7 +65,7 @@ Route::prefix('tenant/{tenantId}')
 
             // PHASE 2: Employee Management
             Route::resource('employees', EmployeeController::class);
-
+            Route::resource('categories', CategoryController::class);
             // PHASE 3 & 4 (Upcoming): Trainings & Calendar
            // Phase 3: Trainings Management
             Route::get('/employees/{employee}/trainings', [TrainingController::class, 'index'])->name('trainings.employee.index');

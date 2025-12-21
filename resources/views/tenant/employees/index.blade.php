@@ -35,7 +35,10 @@
                 @forelse($employees as $employee)
                 <tr class="hover:bg-slate-50 transition">
                     <td class="px-6 py-4">
-                        <div class="font-medium text-slate-800">{{ $employee->name }}</div>
+                        <a href="{{ route('tenant.employees.show', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" 
+                        class="font-bold text-blue-600 hover:text-blue-800 hover:underline">
+                            {{ $employee->name }}
+                        </a>
                     </td>
                     <td class="px-6 py-4 text-slate-600">
                         {{ $employee->dob->format('d.m.Y') }}

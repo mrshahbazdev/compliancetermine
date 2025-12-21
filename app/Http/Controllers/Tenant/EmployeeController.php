@@ -18,7 +18,12 @@ class EmployeeController extends Controller
         $users = User::all(); 
         return view('tenant.employees.create', compact('users'));
     }
-
+    public function show(string $tenantId, Employee $employee)
+    {
+        // Employee ke sath unki sari trainings aur categories fetch karein
+        $employee->load('trainings.category');
+        return view('tenant.employees.show', compact('employee'));
+    }
     public function store(Request $request) {
         $request->validate([
             'name' => 'required|string',

@@ -26,7 +26,12 @@
             <tbody class="divide-y divide-slate-200">
                 @foreach($categories as $category)
                 <tr class="hover:bg-slate-50 transition">
-                    <td class="px-6 py-4 text-slate-800 font-medium">{{ $category->name }}</td>
+                    <td class="px-6 py-4">
+                        <a href="{{ route('tenant.categories.show', ['tenantId' => request()->tenantId, 'category' => $category->id]) }}" 
+                        class="font-bold text-indigo-600 hover:text-indigo-800 hover:underline">
+                            {{ $category->name }}
+                        </a>
+                    </td>
                     <td class="px-6 py-4 text-right">
                         <form action="{{ route('tenant.categories.destroy', ['tenantId' => request()->tenantId, 'category' => $category->id]) }}" method="POST" onsubmit="return confirm('Möchten Sie diese Kategorie wirklich löschen?')">
                             @csrf

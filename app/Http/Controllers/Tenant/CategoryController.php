@@ -23,4 +23,9 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->back()->with('success', 'Kategorie gelöscht.');
     }
+    public function show(string $tenantId, Category $category)
+    {
+        $category->load('trainings.employee');
+        return view('tenant.categories.show', compact('category'));
+    }
 }
