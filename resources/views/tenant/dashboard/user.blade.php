@@ -1,118 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - {{ $tenant->subdomain }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-50">
+@extends('layouts.tenant')
 
-    <!-- Navigation -->
-    @include('tenant.partials.nav')
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        @if(session('success'))
-            <div class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded">
-                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-            </div>
-        @endif
-
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900">
-                Hello, {{ $user->name }}! 👋
+@section('content')
+<div class="max-w-7xl mx-auto">
+    
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+                Hallo, {{ Auth::user()->name }}! 👋
             </h2>
-            <p class="text-gray-600 mt-2">Welcome to your workspace at {{ $tenant->subdomain }}</p>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-blue-100 text-sm">Team Members</p>
-                        <p class="text-4xl font-bold mt-2">{{ $stats['total_team'] }}</p>
-                    </div>
-                    <div class="bg-white/20 p-4 rounded-full">
-                        <i class="fas fa-users text-3xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-purple-100 text-sm">Developers</p>
-                        <p class="text-4xl font-bold mt-2">{{ $stats['developers'] }}</p>
-                    </div>
-                    <div class="bg-white/20 p-4 rounded-full">
-                        <i class="fas fa-code text-3xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-green-100 text-sm">Work-Bees</p>
-                        <p class="text-4xl font-bold mt-2">{{ $stats['work_bees'] }}</p>
-                    </div>
-                    <div class="bg-white/20 p-4 rounded-full">
-                        <i class="fas fa-user-friends text-3xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Welcome Card -->
-        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div class="inline-block p-4 bg-indigo-100 rounded-full mb-4">
-                <i class="fas fa-rocket text-indigo-600 text-4xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">
-                Welcome to {{ $tenant->subdomain }}!
-            </h3>
-            <p class="text-gray-600 mb-6">
-                You're now part of the team. Start collaborating with {{ $stats['total_team'] - 1 }} other members.
+            <p class="text-slate-500 mt-2 font-medium">
+                Überblick über Ihre zugewiesenen Mitarbeiter und Fristen.
             </p>
-            <div class="flex justify-center gap-4">
-                <button class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                    <i class="fas fa-plus mr-2"></i>Create New Idea
-                </button>
-                <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                    <i class="fas fa-list mr-2"></i>View Ideas
-                </button>
+        </div>
+        <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 hidden md:block text-right">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Aktuelles Datum</p>
+            <p class="text-lg font-black text-blue-600 leading-none mt-1">{{ now()->format('d.m.Y') }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Meine Mitarbeiter</p>
+                    <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_employees'] ?? 0 }}</p>
+                </div>
+                <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600">
+                    <i class="fas fa-user-check text-xl"></i>
+                </div>
             </div>
+            <p class="mt-4 text-[10px] text-slate-400 font-bold uppercase italic">Ihnen direkt zugeordnet</p>
         </div>
 
-        <!-- Team Members (if any) -->
-        @if($teamMembers->count() > 0)
-        <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                <i class="fas fa-users text-indigo-600 mr-2"></i>Your Team
-            </h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($teamMembers as $member)
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white
-                            {{ $member->role === 'developer' ? 'bg-purple-500' : 'bg-green-500' }}
-                        ">
-                            {{ strtoupper(substr($member->name, 0, 1)) }}
-                        </div>
-                        <div class="ml-3">
-                            <p class="font-medium text-gray-900">{{ $member->name }}</p>
-                            <p class="text-xs text-gray-500">{{ ucfirst(str_replace('-', ' ', $member->role)) }}</p>
-                        </div>
-                    </div>
-                @endforeach
+        <div class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6 relative group">
+            <div class="relative flex items-center justify-between">
+                <div>
+                    <p class="text-red-600 text-xs font-bold uppercase tracking-wider italic">Kritisch (< 90 Tage)</p>
+                    <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['critical_trainings'] ?? 0 }}</p>
+                </div>
+                <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200">
+                    <i class="fas fa-clock text-xl"></i>
+                </div>
             </div>
+            <p class="mt-4 text-[10px] text-red-500 font-bold uppercase">Handlungsbedarf</p>
         </div>
-        @endif
+
+        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-emerald-600 text-xs font-bold uppercase tracking-wider">Zertifikate</p>
+                    <p class="text-3xl font-black text-emerald-700 mt-1">{{ $stats['total_certificates'] ?? 0 }}</p>
+                </div>
+                <div class="bg-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
+                    <i class="fas fa-file-contract text-xl"></i>
+                </div>
+            </div>
+            <p class="mt-4 text-[10px] text-emerald-600 font-bold uppercase">Gültige Nachweise</p>
+        </div>
 
     </div>
 
-</body>
-</html>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-12">
+        <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h3 class="font-bold text-slate-800 flex items-center">
+                <i class="fas fa-list-ul text-blue-600 mr-2"></i>
+                Meine anstehenden Termine
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border-b border-slate-100">
+                        <th class="px-6 py-4">Mitarbeiter</th>
+                        <th class="px-6 py-4">Schulung</th>
+                        <th class="px-6 py-4">Fälligkeit</th>
+                        <th class="px-6 py-4 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @forelse($expiringTrainings as $training)
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-bold text-slate-900 text-sm">{{ $training->employee->name }}</td>
+                            <td class="px-6 py-4 text-slate-600 text-sm">
+                                <span class="bg-slate-100 px-2 py-1 rounded text-xs">{{ $training->category->name }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600 text-sm font-medium">{{ $training->expiry_date->format('d.m.Y') }}</td>
+                            <td class="px-6 py-4 text-right">
+                                @php
+                                    $daysLeft = round(now()->diffInDays($training->expiry_date, false));
+                                @endphp
+                                @if($daysLeft < 0)
+                                    <span class="px-3 py-1 bg-red-600 text-white text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                        Abgelaufen ({{ abs($daysLeft) }} Tage)
+                                    </span>
+                                @elseif($daysLeft <= 90)
+                                    <span class="px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                        {{ $daysLeft }} Tage
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                        Gültig
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <i class="fas fa-check-circle text-slate-200 text-4xl mb-3"></i>
+                                <p class="text-slate-400 text-sm font-medium">Keine anstehenden Termine für Ihre Mitarbeiter.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endsection
