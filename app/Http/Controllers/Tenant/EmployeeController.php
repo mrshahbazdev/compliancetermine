@@ -35,6 +35,7 @@ class EmployeeController extends Controller
         // Responsible persons ko link karna (Pivot table)
         $employee->responsibles()->sync($request->responsible_ids);
 
-        return redirect()->route('tenant.employees.index')->with('success', 'Mitarbeiter angelegt.');
+        return redirect()->route('tenant.employees.index', ['tenantId' => request()->route('tenantId')])
+                 ->with('success', 'Mitarbeiter angelegt.');
     }
 }
