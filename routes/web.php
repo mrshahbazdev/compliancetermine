@@ -18,7 +18,11 @@ use App\Http\Controllers\Tenant\Admin\{
     SettingsController
 };
 
-// 1. Root / Welcome Page Logic
+/*
+|--------------------------------------------------------------------------
+| Public Central Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     $tenant = request()->attributes->get('tenant');
     return view('welcome', [
@@ -27,55 +31,72 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// 2. Authentication Routes (Global/Tenant Shared)
-Route::middleware(['web'])->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register']);
-});
+Route::get('/home', [HomeController::class, 'index'])->name('central.home');
 
-// 3. Central Admin Routes (Tenant Management)
+/*
+|--------------------------------------------------------------------------
+| Tenant Routes (Prefix: tenant/{tenantId})
+|--------------------------------------------------------------------------
+*/
+Route::prefix('tenant/{tenantId}')
+    ->middleware(['identify.tenant'])
+    ->name('tenant.') // Isse sare routes 'tenant.' se shuru honge (e.g. tenant.login)
+    ->group(function () {
+
+        // --- GUEST ROUTES (Login/Register) ---
+        Route::middleware('guest')->group(function () {
+            Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+            Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+            
+            Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+            Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+        });
+
+        // --- PROTECTED ROUTES (Requires Auth) ---
+        Route::middleware(['auth'])->group(function () {
+            
+            // Dashboard
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+            // PHASE 2: Category Management
+            Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+            Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+            Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+            // PHASE 2: Employee Management
+            Route::resource('employees', EmployeeController::class);
+
+            // PHASE 3 & 4 (Upcoming): Trainings & Calendar
+            Route::resource('trainings', TrainingController::class);
+            Route::get('/calendar', [TrainingController::class, 'calendar'])->name('calendar');
+
+            // --- TENANT ADMIN ROUTES ---
+            Route::middleware(['admin.only'])->prefix('admin')->name('admin.')->group(function () {
+                
+                // User Management
+                Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+                Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
+                Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+                Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+                Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+                Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+                Route::post('/users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+                
+                // Settings
+                Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+                Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+            });
+        });
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Central Admin Management (Optional)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'admin.only'])->group(function () {
     Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
     Route::get('/tenants/create', [TenantController::class, 'create'])->name('tenants.create');
     Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
 });
-
-// 4. MAIN PROJECT ROUTES (Tenant Specific)
-Route::prefix('tenant/{tenantId}')
-    ->middleware(['identify.tenant', 'auth'])
-    ->name('tenant.')
-    ->group(function () {
-        
-        // Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        // --- PHASE 2: Category Management ---
-        Route::prefix('categories')->name('categories.')->group(function () {
-            Route::get('/', [CategoryController::class, 'index'])->name('index');
-            Route::post('/', [CategoryController::class, 'store'])->name('store');
-            Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
-        });
-
-        // --- PHASE 2: Employee Management ---
-        Route::resource('employees', EmployeeController::class);
-
-        // --- PHASE 3 & 4: Training & Certificates (Upcoming) ---
-        Route::resource('trainings', TrainingController::class);
-        Route::get('/calendar', [TrainingController::class, 'calendar'])->name('calendar');
-
-        // --- Admin Specific within Tenant ---
-        Route::middleware(['admin.only'])->prefix('admin')->name('admin.')->group(function () {
-            
-            // User Management
-            Route::resource('users', UserManagementController::class);
-            Route::post('/users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
-            
-            // Settings
-            Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-            Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-        });
-    });
