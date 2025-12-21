@@ -8,15 +8,17 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
+
 class TrainingController extends Controller
 {
-    
-
+    /**
+     * Certificate ko Browser mein View karne ke liye (Download nahi)
+     */
     public function viewCertificate(string $tenantId, Training $training)
     {
-        // Security Check: Kya user ko is employee ka data dekhne ki ijazat hai?
-        $user = auth()->user();
+        $user = Auth::user();
+        
+        // Security Check: Kya user manager ya admin hai?
         if (!$user->isAdmin() && !$training->employee->responsibles->contains($user->id)) {
             abort(403);
         }
@@ -28,25 +30,25 @@ class TrainingController extends Controller
         $path = Storage::disk('public')->path($training->certificate_path);
         $mimeType = Storage::disk('public')->mimeType($training->certificate_path);
 
-        // 'inline' header file ko browser mein open karta hai (download nahi karta)
+        // 'inline' header file ko browser mein open karta hai
         return response()->file($path, [
             'Content-Type' => $mimeType,
             'Content-Disposition' => 'inline; filename="'.basename($path).'"'
         ]);
     }
+
     /**
-     * View: Employee ki trainings list aur naya plan karne ka form
+     * View: Employee ki trainings list
      */
     public function index(string $tenantId, string $employeeId)
     {
         $user = Auth::user();
         
-        // Employee with history fetch karein
         $employee = Employee::with(['trainings' => function($q) {
             $q->orderBy('expiry_date', 'desc');
         }, 'trainings.category'])->findOrFail($employeeId);
 
-        // SECURITY CHECK: Manager access validation
+        // SECURITY CHECK
         if (!$user->isAdmin()) {
             $isAssigned = $employee->responsibles()->where('user_id', $user->id)->exists();
             if (!$isAssigned) {
@@ -54,12 +56,10 @@ class TrainingController extends Controller
             }
         }
 
-        // DATA NORMALIZATION: Purane data ke liye fallback logic
-        // Agar database mein training_date null hai, toh purana last_event_date use karein
+        // Data Fix: Ensure formatting works on existing records
         foreach($employee->trainings as $training) {
-            if (!$training->training_date && $training->last_event_date) {
-                $training->training_date = $training->last_event_date;
-            }
+            // Hum hamesha last_event_date hi use karenge kyunki database mein wahi hai
+            $training->training_date = $training->last_event_date;
         }
 
         $categories = Category::all();
@@ -67,42 +67,41 @@ class TrainingController extends Controller
     }
 
     /**
-     * Store: Nayi training schedule karna (Planned) ya complete karna (with Certificate)
+     * Store: Nayi training save ya plan karna
      */
     public function store(Request $request, string $tenantId, string $employeeId)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'training_date' => 'required|date',
+            'last_event_date' => 'required|date',
             'duration_days' => 'nullable|integer|min:1',
             'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        $category = Category::findOrFail($request->category_id);
-        $trainingDate = \Carbon\Carbon::parse($request->training_date);
+        $trainingDate = Carbon::parse($request->last_event_date);
         
-        // File Upload Logic
+        // File Upload
         $filePath = null;
         if ($request->hasFile('certificate')) {
             $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
         }
 
-        // Status: Certificate hai to completed, warna planned
+        // Status logic
         $status = $filePath ? 'completed' : 'planned';
 
-        // FIX: Typecast to integer to avoid Carbon error
+        // Typecast duration to avoid Carbon errors
         $days = (int) ($request->duration_days ?? 365); 
         $expiryDate = $trainingDate->copy()->addDays($days);
 
-        \App\Models\Training::create([
-            'employee_id'     => $employeeId,
-            'category_id'     => $request->category_id,
-            'training_date'   => $trainingDate, // Naya column
-            'last_event_date' => $trainingDate, // Purana column (Error fix karne ke liye)
-            'expiry_date'     => $expiryDate,
-            'duration_days'   => $days,
+        // Database mein sirf wahi columns use karein jo maujood hain
+        Training::create([
+            'employee_id'      => $employeeId,
+            'category_id'      => $request->category_id,
+            'last_event_date'  => $trainingDate, // database column
+            'expiry_date'      => $expiryDate,
+            'duration_days'    => $days,
             'certificate_path' => $filePath,
-            'status'          => $status,
+            'status'           => $status,
         ]);
 
         $msg = $status === 'planned' ? 'Schulung wurde erfolgreich geplant.' : 'Training und Zertifikat wurden gespeichert.';
@@ -111,14 +110,13 @@ class TrainingController extends Controller
     }
 
     /**
-     * Calendar View: Logic for Red (Expiry) and Blue (Planned)
+     * Calendar View
      */
     public function calendar(string $tenantId)
     {
         $user = Auth::user();
         $query = Training::with(['employee', 'category']);
 
-        // Security: Manager sirf apne employees ke events dekhe
         if (!$user->isAdmin()) {
             $query->whereHas('employee.responsibles', function($q) use ($user) {
                 $q->where('user_id', $user->id);
@@ -131,12 +129,11 @@ class TrainingController extends Controller
             $isPlanned = $training->status === 'planned';
             $daysLeft = now()->diffInDays($training->expiry_date, false);
 
-            // Color Logic
             if ($isPlanned) {
-                $color = '#2563eb'; // Blue for Planned
+                $color = '#2563eb'; // Blue
                 $statusText = 'Geplant';
             } else {
-                $color = $daysLeft <= 90 ? '#ef4444' : '#10b981'; // Red for Critical, Emerald for OK
+                $color = $daysLeft <= 90 ? '#ef4444' : '#10b981'; // Red or Emerald
                 $statusText = $daysLeft < 0 ? 'Abgelaufen' : 'Gültig';
             }
 
