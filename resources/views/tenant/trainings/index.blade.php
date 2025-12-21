@@ -10,7 +10,7 @@
     <div class="grid md:grid-cols-3 gap-8">
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
             <h3 class="font-bold text-lg mb-4">Termin erfassen</h3>
-            <form action="{{ route('tenant.trainings.store', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" method="POST">
+            <form action="{{ route('tenant.trainings.store', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">Kategorie</label>
@@ -19,6 +19,10 @@
                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Zertifikat (PDF/Bild)</label>
+                    <input type="file" name="certificate" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-1">Letztes Ereignis</label>
@@ -43,6 +47,7 @@
                         <th class="px-6 py-4 text-sm font-semibold">Letzter Termin</th>
                         <th class="px-6 py-4 text-sm font-semibold">Ablaufdatum</th>
                         <th class="px-6 py-4 text-sm font-semibold">Status</th>
+                        <th class="px-6 py-4 text-sm font-semibold">Zertifikat</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
@@ -64,6 +69,15 @@
                                 <span class="bg-red-100 text-red-700 text-[10px] px-2 py-1 rounded font-bold uppercase">{{ $daysLeft }} Tage übrig</span>
                             @else
                                 <span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold uppercase">Gültig</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($training->certificate_path)
+                                <a href="{{ asset('storage/' . $training->certificate_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                                    <i class="fas fa-file-download mr-1"></i> View
+                                </a>
+                            @else
+                                <span class="text-gray-400 text-xs">Kein Upload</span>
                             @endif
                         </td>
                     </tr>

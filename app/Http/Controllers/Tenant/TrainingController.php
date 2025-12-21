@@ -24,28 +24,39 @@ class TrainingController extends Controller
      */
     public function store(Request $request, string $tenantId, string $employeeId)
     {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'last_event_date' => 'required|date',
-            'duration_days' => 'required|integer|min:1',
-        ]);
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'last_event_date' => 'required|date',
+        'duration_days' => 'required|integer|min:1',
+        'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Max 2MB
+    ]);
 
-        $lastEvent = Carbon::parse($request->last_event_date);
-        $expiryDate = $lastEvent->copy()->addDays((int) $request->duration_days);
+    $lastEvent = \Carbon\Carbon::parse($request->last_event_date);
+    $expiryDate = $lastEvent->copy()->addDays((int) $request->duration_days);
 
-        Training::updateOrCreate(
-            [
-                'employee_id' => $employeeId,
-                'category_id' => $request->category_id,
-            ],
-            [
-                'last_event_date' => $request->last_event_date,
-                'duration_days' => $request->duration_days,
-                'expiry_date' => $expiryDate,
-            ]
-        );
+    // File Upload Logic
+    $filePath = null;
+    if ($request->hasFile('certificate')) {
+        // Tenant specific folder mein save karein
+        $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+    }
 
-        return redirect()->back()->with('success', 'Schulungstermin wurde erfolgreich aktualisiert.');
+    $data = [
+        'last_event_date' => $request->last_event_date,
+        'duration_days' => $request->duration_days,
+        'expiry_date' => $expiryDate,
+    ];
+
+    if ($filePath) {
+        $data['certificate_path'] = $filePath;
+    }
+
+    Training::updateOrCreate(
+        ['employee_id' => $employeeId, 'category_id' => $request->category_id],
+        $data
+    );
+
+    return redirect()->back()->with('success', 'Training und Zertifikat gespeichert.');
     }
 
     /**
