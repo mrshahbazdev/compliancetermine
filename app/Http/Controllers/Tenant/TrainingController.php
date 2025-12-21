@@ -71,6 +71,7 @@ class TrainingController extends Controller
      */
     public function store(Request $request, string $tenantId, string $employeeId)
 {
+    dd($request->all());
     $request->validate([
         'category_id' => 'required|exists:categories,id',
         'last_event_date' => 'required|date',
