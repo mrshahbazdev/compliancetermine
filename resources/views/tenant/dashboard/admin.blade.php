@@ -19,71 +19,75 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Mitarbeiter</p>
-                    <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_employees'] ?? 0 }}</p>
-                </div>
-                <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600">
-                    <i class="fas fa-users text-xl"></i>
-                </div>
+    
+    <a href="{{ route('tenant.employees.index', request()->tenantId) }}" 
+       class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition hover:shadow-md hover:border-blue-300 group">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider group-hover:text-blue-600 transition">Mitarbeiter</p>
+                <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_employees'] ?? 0 }}</p>
             </div>
-            <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase">
-                <i class="fas fa-database mr-2"></i> System-Bestand
+            <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition duration-300">
+                <i class="fas fa-users text-xl"></i>
             </div>
         </div>
+        <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase group-hover:text-slate-600">
+            <i class="fas fa-arrow-right mr-2"></i> Alle Mitarbeiter ansehen
+        </div>
+    </a>
 
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Kategorien</p>
-                    <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_categories'] ?? 0 }}</p>
-                </div>
-                <div class="bg-indigo-50 w-12 h-12 rounded-xl flex items-center justify-center text-indigo-600">
-                    <i class="fas fa-tags text-xl"></i>
-                </div>
+    <a href="{{ route('tenant.categories.index', request()->tenantId) }}" 
+       class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition hover:shadow-md hover:border-indigo-300 group">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider group-hover:text-indigo-600 transition">Kategorien</p>
+                <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_categories'] ?? 0 }}</p>
             </div>
-            <div class="mt-4 pt-4 border-t border-slate-50 text-[10px] text-slate-400 font-bold uppercase">
-                z.B. ADR, Stapler, Ersthelfer
+            <div class="bg-indigo-50 w-12 h-12 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition duration-300">
+                <i class="fas fa-tags text-xl"></i>
             </div>
         </div>
+        <div class="mt-4 pt-4 border-t border-slate-50 text-[10px] text-slate-400 font-bold uppercase group-hover:text-slate-600">
+            <i class="fas fa-arrow-right mr-2"></i> Schulungstypen verwalten
+        </div>
+    </a>
 
-        <div class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6 transition hover:shadow-md relative overflow-hidden group">
-            <div class="absolute -right-2 -top-2 text-red-100 opacity-50 group-hover:scale-110 transition duration-500">
-                <i class="fas fa-exclamation-triangle text-6xl"></i>
+    <a href="{{ route('tenant.calendar', request()->tenantId) }}" 
+       class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6 transition hover:shadow-md hover:border-red-300 relative overflow-hidden group">
+        <div class="absolute -right-2 -top-2 text-red-100 opacity-50 group-hover:scale-110 transition duration-500">
+            <i class="fas fa-exclamation-triangle text-6xl"></i>
+        </div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <p class="text-red-600 text-xs font-bold uppercase tracking-wider italic">Kritisch (< 90 Tage)</p>
+                <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['critical_trainings'] ?? 0 }}</p>
             </div>
-            <div class="relative flex items-center justify-between">
-                <div>
-                    <p class="text-red-600 text-xs font-bold uppercase tracking-wider italic">Kritisch (< 90 Tage)</p>
-                    <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['critical_trainings'] ?? 0 }}</p>
-                </div>
-                <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200 animate-pulse">
-                    <i class="fas fa-clock text-xl"></i>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-red-100 flex items-center text-[10px] text-red-500 font-bold uppercase">
-                <i class="fas fa-bell mr-2"></i> Handlungsbedarf
+            <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200 animate-pulse group-hover:animate-none">
+                <i class="fas fa-clock text-xl"></i>
             </div>
         </div>
+        <div class="mt-4 pt-4 border-t border-red-100 flex items-center text-[10px] text-red-500 font-bold uppercase">
+            <i class="fas fa-calendar-exclamation mr-2"></i> Fristen im Kalender prüfen
+        </div>
+    </a>
 
-        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm p-6 transition hover:shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-emerald-600 text-xs font-bold uppercase tracking-wider">Zertifikate</p>
-                    <p class="text-3xl font-black text-emerald-700 mt-1">{{ $stats['total_certificates'] ?? 0 }}</p>
-                </div>
-                <div class="bg-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                    <i class="fas fa-file-contract text-xl"></i>
-                </div>
+    <a href="{{ route('tenant.employees.overview', request()->tenantId) }}" 
+       class="bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm p-6 transition hover:shadow-md hover:border-emerald-300 group">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-emerald-600 text-xs font-bold uppercase tracking-wider group-hover:text-emerald-700 transition">Zertifikate</p>
+                <p class="text-3xl font-black text-emerald-700 mt-1">{{ $stats['total_certificates'] ?? 0 }}</p>
             </div>
-            <div class="mt-4 pt-4 border-t border-emerald-100 text-[10px] text-emerald-600 font-bold uppercase">
-                Gültige Nachweise im Archiv
+            <div class="bg-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 group-hover:bg-emerald-600 transition">
+                <i class="fas fa-file-contract text-xl"></i>
             </div>
         </div>
+        <div class="mt-4 pt-4 border-t border-emerald-100 text-[10px] text-emerald-600 font-bold uppercase">
+            <i class="fas fa-arrow-right mr-2"></i> Matrix-Übersicht öffnen
+        </div>
+    </a>
 
-    </div>
+</div>
 
     <div class="grid lg:grid-cols-3 gap-8 mb-12">
         
