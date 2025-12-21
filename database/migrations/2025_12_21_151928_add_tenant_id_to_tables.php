@@ -6,28 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         $tables = ['employees', 'trainings', 'categories'];
-        foreach ($tables as $table) {
-            Schema::table($table, function (Blueprint $table) {
-                if (!Schema::hasColumn($table, 'tenant_id')) {
-                    $table->string('tenant_id')->after('id')->nullable();
+
+        foreach ($tables as $tableName) {
+            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+                // FIX: Yahan $tableName (string) use karein, $table (object) nahi
+                if (!Schema::hasColumn($tableName, 'tenant_id')) {
+                    $table->string('tenant_id')->after('id')->nullable()->index();
                 }
             });
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::table('tables', function (Blueprint $table) {
-            //
-        });
+        $tables = ['employees', 'trainings', 'categories'];
+
+        foreach ($tables as $tableName) {
+            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
+                if (Schema::hasColumn($tableName, 'tenant_id')) {
+                    $table->dropColumn('tenant_id');
+                }
+            });
+        }
     }
 };
