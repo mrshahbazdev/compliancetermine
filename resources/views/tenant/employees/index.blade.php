@@ -68,9 +68,21 @@
                         <td class="px-6 py-4">
                             <div class="flex flex-wrap gap-1.5">
                                 @foreach($employee->responsibles as $responsible)
-                                    <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200">
-                                        {{ $responsible->name }}
-                                    </span>
+                                    <div class="inline-flex items-center bg-slate-100 border border-slate-200 rounded-md px-2 py-1">
+                                        <span class="text-xs font-bold text-slate-700 mr-2">
+                                            {{ $responsible->name }}
+                                        </span>
+                                        
+                                        @if($responsible->role === 'admin')
+                                            <span class="text-[8px] bg-red-500 text-white px-1 rounded font-black uppercase tracking-tighter">
+                                                Admin
+                                            </span>
+                                        @else
+                                            <span class="text-[8px] bg-emerald-500 text-white px-1 rounded font-black uppercase tracking-tighter">
+                                                Manager
+                                            </span>
+                                        @endif
+                                    </div>
                                 @endforeach
                             </div>
                         </td>
