@@ -95,13 +95,14 @@ class TrainingController extends Controller
         $expiryDate = $trainingDate->copy()->addDays($days);
 
         \App\Models\Training::create([
-            'employee_id' => $employeeId,
-            'category_id' => $request->category_id,
-            'training_date' => $trainingDate,
-            'expiry_date' => $expiryDate,
-            'duration_days' => $days,
+            'employee_id'     => $employeeId,
+            'category_id'     => $request->category_id,
+            'training_date'   => $trainingDate, // Naya column
+            'last_event_date' => $trainingDate, // Purana column (Error fix karne ke liye)
+            'expiry_date'     => $expiryDate,
+            'duration_days'   => $days,
             'certificate_path' => $filePath,
-            'status' => $status,
+            'status'          => $status,
         ]);
 
         $msg = $status === 'planned' ? 'Schulung wurde erfolgreich geplant.' : 'Training und Zertifikat wurden gespeichert.';
