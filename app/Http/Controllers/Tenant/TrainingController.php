@@ -14,7 +14,19 @@ class TrainingController extends Controller
      */
     public function index(string $tenantId, string $employeeId)
     {
+        $user = auth()->user();
+        
+        // Employee dhoondein
         $employee = Employee::with('trainings.category')->findOrFail($employeeId);
+
+        // SECURITY CHECK: Agar user Admin nahi hai, toh check karein ke kya ye employee usay assigned hai?
+        if (!$user->isAdmin()) {
+            $isAssigned = $employee->responsibles()->where('user_id', $user->id)->exists();
+            if (!$isAssigned) {
+                abort(403, 'Sie sind nicht für diesen Mitarbeiter verantwortlich.');
+            }
+        }
+
         $categories = Category::all();
         return view('tenant.trainings.index', compact('employee', 'categories'));
     }
