@@ -71,10 +71,10 @@ class TrainingController extends Controller
      */
     public function store(Request $request, string $tenantId, string $employeeId)
 {
-    dd($request->all());
+    
     $request->validate([
         'category_id' => 'required|exists:categories,id',
-        'last_event_date' => 'required|date',
+        'last_event_date' => 'required|date', // Match with Blade
         'duration_days' => 'nullable|integer|min:1',
         'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
     ]);

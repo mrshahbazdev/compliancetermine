@@ -33,7 +33,10 @@
                     <i class="fas fa-calendar-plus text-blue-600 mr-3"></i> Schulung Planen / Erfassen
                 </h3>
 
-                <form action="{{ route('tenant.trainings.store', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" method="POST" enctype="multipart/form-data" class="relative z-10 space-y-5">
+                <form action="{{ route('tenant.trainings.store', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" 
+                    method="POST" 
+                    enctype="multipart/form-data" 
+                    class="relative z-10 space-y-5">
                     @csrf
                     
                     <div>
@@ -58,7 +61,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Datum</label>
-                            <input type="date" name="training_date" value="{{ date('Y-m-d') }}" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 shadow-inner">
+                            <input type="date" name="last_event_date" value="{{ date('Y-m-d') }}" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 shadow-inner">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Gültigkeit</label>
