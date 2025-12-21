@@ -70,44 +70,40 @@ class TrainingController extends Controller
      * Store: Nayi training save ya plan karna
      */
     public function store(Request $request, string $tenantId, string $employeeId)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'last_event_date' => 'required|date',
-            'duration_days' => 'nullable|integer|min:1',
-            'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
+{
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'last_event_date' => 'required|date',
+        'duration_days' => 'nullable|integer|min:1',
+        'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+    ]);
 
-        $trainingDate = Carbon::parse($request->last_event_date);
-        
-        // File Upload
-        $filePath = null;
-        if ($request->hasFile('certificate')) {
-            $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
-        }
-
-        // Status logic
-        $status = $filePath ? 'completed' : 'planned';
-
-        // Typecast duration to avoid Carbon errors
-        $days = (int) ($request->duration_days ?? 365); 
-        $expiryDate = $trainingDate->copy()->addDays($days);
-
-        // Database mein sirf wahi columns use karein jo maujood hain
-        Training::create([
-            'employee_id'      => $employeeId,
-            'category_id'      => $request->category_id,
-            'last_event_date'  => $trainingDate, // database column
-            'expiry_date'      => $expiryDate,
-            'duration_days'    => $days,
-            'certificate_path' => $filePath,
-            'status'           => $status,
-        ]);
-
-        $msg = $status === 'planned' ? 'Schulung wurde erfolgreich geplant.' : 'Training und Zertifikat wurden gespeichert.';
-
-        return redirect()->back()->with('success', $msg);
+    $trainingDate = \Carbon\Carbon::parse($request->last_event_date);
+    
+    // File Upload
+    $filePath = null;
+    if ($request->hasFile('certificate')) {
+        $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
     }
+
+    $status = $filePath ? 'completed' : 'planned';
+    $days = (int) ($request->duration_days ?? 365); 
+    $expiryDate = $trainingDate->copy()->addDays($days);
+
+    // Create record
+    \App\Models\Training::create([
+        'employee_id'      => $employeeId,
+        'category_id'      => $request->category_id,
+        'last_event_date'  => $trainingDate, // Dono columns mein same date bhej rahe hain taake error na aaye
+        'training_date'    => $trainingDate, 
+        'expiry_date'      => $expiryDate,
+        'duration_days'    => $days,
+        'certificate_path' => $filePath,
+        'status'           => $status,
+    ]);
+
+    return redirect()->back()->with('success', 'Datensatz erfolgreich gespeichert.');
+}
 
     /**
      * Calendar View
