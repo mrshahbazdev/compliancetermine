@@ -34,6 +34,11 @@
                               {{ request()->routeIs('tenant.calendar') ? 'bg-blue-100 text-blue-700 shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
                         <i class="fas fa-calendar-alt mr-2"></i>Kalender
                     </a>
+                    <a href="{{ route('tenant.employees.overview', ['tenantId' => request()->tenantId]) }}" 
+                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                                {{ request()->routeIs('tenant.employees.overview') ? 'bg-blue-100 text-blue-700 shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                            <i class="fas fa-layer-group mr-2"></i>Übersicht
+                        </a>
                 </div>
             </div>
 

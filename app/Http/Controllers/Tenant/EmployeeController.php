@@ -44,7 +44,16 @@ class EmployeeController extends Controller
         $selectedResponsibles = $employee->responsibles->pluck('id')->toArray();
         return view('tenant.employees.edit', compact('employee', 'users', 'selectedResponsibles'));
     }
+    public function overview()
+    {
+        // 1. Employee focused: Har employee ke sath uski trainings fetch karein
+        $employees = Employee::with('trainings.category')->get();
 
+        // 2. Category focused: Har category ke sath uske employees fetch karein
+        $categories = Category::with('trainings.employee')->get();
+
+        return view('tenant.employees.overview', compact('employees', 'categories'));
+    }
     public function update(Request $request, string $tenantId, Employee $employee) {
         $request->validate([
             'name' => 'required|string',

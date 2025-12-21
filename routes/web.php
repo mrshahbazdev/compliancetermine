@@ -71,7 +71,7 @@ Route::prefix('tenant/{tenantId}')
             Route::get('/employees/{employee}/trainings', [TrainingController::class, 'index'])->name('trainings.employee.index');
             Route::post('/employees/{employee}/trainings', [TrainingController::class, 'store'])->name('trainings.store');
             Route::get('/calendar', [TrainingController::class, 'calendar'])->name('calendar');
-
+            Route::get('/overview', [EmployeeController::class, 'overview'])->name('employees.overview');
             // --- TENANT ADMIN ROUTES ---
             Route::middleware(['admin.only'])->prefix('admin')->name('admin.')->group(function () {
                 
