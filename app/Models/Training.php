@@ -15,13 +15,15 @@ class Training extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'employee_id',
-        'category_id',
-        'last_event_date',
-        'duration_days',
-        'expiry_date',
-        'certificate_path',
+        protected $fillable = [
+        'employee_id', 
+        'category_id', 
+        'training_date', 
+        'last_event_date', // Ye lazmi add karein
+        'expiry_date', 
+        'duration_days', 
+        'certificate_path', 
+        'status'
     ];
 
     /**
