@@ -78,31 +78,36 @@ class TrainingController extends Controller
         'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
     ]);
 
-    $trainingDate = \Carbon\Carbon::parse($request->last_event_date);
-    
-    // File Upload
-    $filePath = null;
-    if ($request->hasFile('certificate')) {
-        $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+    try {
+        $trainingDate = \Carbon\Carbon::parse($request->last_event_date);
+        
+        $filePath = null;
+        if ($request->hasFile('certificate')) {
+            $filePath = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+        }
+
+        $status = $filePath ? 'completed' : 'planned';
+        $days = (int) ($request->duration_days ?? 365); 
+        $expiryDate = $trainingDate->copy()->addDays($days);
+
+        // CREATE KI JAGAH SAVE METHOD USE KAREIN DEBUGGING KE LIYE
+        $training = new \App\Models\Training();
+        $training->employee_id = $employeeId;
+        $training->category_id = $request->category_id;
+        $training->last_event_date = $trainingDate;
+        $training->expiry_date = $expiryDate;
+        $training->duration_days = $days;
+        $training->certificate_path = $filePath;
+        $training->status = $status;
+        
+        $training->save(); // Agar yahan masla hoga toh catch block pakad lega
+
+        return redirect()->back()->with('success', 'Gespeichert!');
+
+    } catch (\Exception $e) {
+        // AGAR KOI BHI ERROR AAYA TO YE SCREEN PAR SHOW HOGA
+        dd("Database Error: " . $e->getMessage());
     }
-
-    $status = $filePath ? 'completed' : 'planned';
-    $days = (int) ($request->duration_days ?? 365); 
-    $expiryDate = $trainingDate->copy()->addDays($days);
-
-    // Create record
-    \App\Models\Training::create([
-        'employee_id'      => $employeeId,
-        'category_id'      => $request->category_id,
-        'last_event_date'  => $trainingDate, // Dono columns mein same date bhej rahe hain taake error na aaye
-        'training_date'    => $trainingDate, 
-        'expiry_date'      => $expiryDate,
-        'duration_days'    => $days,
-        'certificate_path' => $filePath,
-        'status'           => $status,
-    ]);
-
-    return redirect()->back()->with('success', 'Datensatz erfolgreich gespeichert.');
 }
 
     /**
