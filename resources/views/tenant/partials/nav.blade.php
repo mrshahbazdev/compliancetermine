@@ -86,11 +86,6 @@
                                     <i class="fas fa-users-cog w-5 mr-3 text-blue-500"></i>
                                     <span class="font-medium">Benutzerverwaltung</span>
                                 </a>
-                                <a href="{{ route('tenant.admin.settings', ['tenantId' => request()->tenantId]) }}" 
-                                   class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                                    <i class="fas fa-cog w-5 mr-3 text-blue-500"></i>
-                                    <span class="font-medium">Einstellungen</span>
-                                </a>
                             @endif
                         </div>
 
