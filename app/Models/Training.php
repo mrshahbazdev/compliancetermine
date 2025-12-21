@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder; // Scope ke liye lazmi hai
 
 class Training extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Mass assignable attributes.
      */
     protected $fillable = [
         'employee_id', 
         'category_id', 
+        'tenant_id', // Isolation column
         'last_event_date', 
         'training_date', 
         'expiry_date', 
@@ -28,14 +28,32 @@ class Training extends Model
 
     /**
      * The attributes that should be cast.
-     *
-     * @var array<string, string>
      */
     protected $casts = [
         'training_date' => 'date',
-        'last_event_date' => 'date', // Purane data ke liye
+        'last_event_date' => 'date',
         'expiry_date' => 'date',
     ];
+
+    /**
+     * Global Scope: Automatic Filtering & Tenant ID Assignment
+     */
+    protected static function booted()
+    {
+        // Global Scope: Har query mein automatic tenant filter lagayega
+        static::addGlobalScope('tenant', function (Builder $builder) {
+            if (session()->has('tenant_id')) {
+                $builder->where('tenant_id', session('tenant_id'));
+            }
+        });
+
+        // Auto-save tenant_id: Naya record save karte waqt khud session se ID uthayega
+        static::creating(function ($model) {
+            if (session()->has('tenant_id')) {
+                $model->tenant_id = session('tenant_id');
+            }
+        });
+    }
 
     /**
      * Get the employee that owns the training.
@@ -55,7 +73,6 @@ class Training extends Model
 
     /**
      * Helper logic: Check if training is expiring within 90 days.
-     * Yeh hum frontend par 'Red' color dikhane ke liye use karenge.
      */
     public function isExpiringSoon(): bool
     {

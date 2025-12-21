@@ -6,33 +6,50 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder; // Scope ke liye lazmi hai
 
 class Employee extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Mass assignable attributes.
      */
     protected $fillable = [
         'name',
         'dob',
+        'tenant_id', // Isolation column
     ];
 
     /**
      * The attributes that should be cast.
-     *
-     * @var array<string, string>
      */
     protected $casts = [
         'dob' => 'date',
     ];
 
     /**
+     * Global Scope: Automatic Filtering & Automatic tenant_id Assignment
+     */
+    protected static function booted()
+    {
+        // Query filter: SELECT * FROM employees WHERE tenant_id = '...'
+        static::addGlobalScope('tenant', function (Builder $builder) {
+            if (session()->has('tenant_id')) {
+                $builder->where('tenant_id', session('tenant_id'));
+            }
+        });
+
+        // Auto-save tenant_id when creating a new employee
+        static::creating(function ($model) {
+            if (session()->has('tenant_id')) {
+                $model->tenant_id = session('tenant_id');
+            }
+        });
+    }
+
+    /**
      * Get all trainings for the employee.
-     * Ek employee ki multiple trainings (ADR, Gabelstapler, etc.) ho sakti hain.
      */
     public function trainings(): HasMany
     {
@@ -41,7 +58,6 @@ class Employee extends Model
 
     /**
      * The responsible persons (Users) for this employee.
-     * Isse hum un 3 responsible logo ko link karenge jo is employee ke records dekh sakte hain.
      */
     public function responsibles(): BelongsToMany
     {
