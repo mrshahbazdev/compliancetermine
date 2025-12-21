@@ -3,21 +3,26 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Employee, Category, Training};
+use App\Models\{Employee, Category, Training, Tenant};
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class TrainingController extends Controller
 {
-    // Employee ki sab trainings dikhane ke liye
-    public function index($tenantId, $employeeId)
+    /**
+     * Employee ki sab trainings manage karne ka view
+     */
+    public function index(string $tenantId, string $employeeId)
     {
         $employee = Employee::with('trainings.category')->findOrFail($employeeId);
         $categories = Category::all();
         return view('tenant.trainings.index', compact('employee', 'categories'));
     }
 
-    public function store(Request $request, $tenantId, $employeeId)
+    /**
+     * Naya training record save ya update karna
+     */
+    public function store(Request $request, string $tenantId, string $employeeId)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -25,7 +30,6 @@ class TrainingController extends Controller
             'duration_days' => 'required|integer|min:1',
         ]);
 
-        // Expiry Date Calculate karna: Last Event + Duration
         $lastEvent = Carbon::parse($request->last_event_date);
         $expiryDate = $lastEvent->copy()->addDays($request->duration_days);
 
@@ -41,6 +45,17 @@ class TrainingController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Schulungstermin wurde aktualisiert.');
+        return redirect()->back()->with('success', 'Schulungstermin wurde erfolgreich aktualisiert.');
+    }
+
+    /**
+     * CALENDAR VIEW (Jis ka error aa raha tha)
+     */
+    public function calendar(string $tenantId)
+    {
+        $tenant = Tenant::findOrFail($tenantId);
+        
+        // Abhi ke liye sirf view return karte hain, data hum Phase 5 mein fetch karenge
+        return view('tenant.calendar.index', compact('tenant'));
     }
 }
