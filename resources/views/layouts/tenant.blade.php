@@ -45,7 +45,7 @@
             </nav>
 
             <div class="p-4 border-t border-slate-100">
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('tenant.logout', ['tenantId' => request()->tenantId]) }}">
                     @csrf
                     <button type="submit" class="flex items-center w-full px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition">
                         <i class="fas fa-sign-out-alt mr-3"></i> Abmelden
