@@ -77,7 +77,6 @@ class User extends Authenticatable
     /**
      * Role Checks
      */
-    public function isAdmin(): bool { return $this->role === 'admin'; }
     public function isDeveloper(): bool { return $this->role === 'developer'; }
     public function isWorkBee(): bool { return $this->role === 'work-bee'; }
     public function isStandard(): bool { return $this->role === 'standard'; }
