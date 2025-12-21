@@ -83,7 +83,7 @@ Route::prefix('tenant/{tenantId}')
                 Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
                 Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
                 Route::post('/users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
-                
+                Route::post('users/{user}/toggle', [UserManagementController::class, 'toggleStatus'])->name('admin.users.toggle-status');
                 // Settings
                 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
                 Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

@@ -6,22 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\{User, Tenant};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
+    // 1. List Users
     public function index(string $tenantId)
     {
         $tenant = Tenant::findOrFail($tenantId);
         
-        // Sirf Admin hi dekh sakay
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized access');
-        }
-
-        // PURANI LOGIC KHATAM: teams, ideas, votes nikaal diye
-        $users = User::where('tenant_id', $tenant->id)
-            ->latest()
-            ->get();
+        $users = User::where('tenant_id', $tenant->id)->latest()->get();
 
         $stats = [
             'total_users'  => $users->count(),
@@ -33,6 +27,59 @@ class UserManagementController extends Controller
         return view('tenant.admin.users.index', compact('users', 'stats', 'tenant'));
     }
 
-    // Baaki methods (create, store, edit) ko bhi aise hi check karein 
-    // ke wahan 'ideas' ya 'teams' ka koi zikr na ho.
+    // 2. Show Edit Form
+    public function edit(string $tenantId, User $user)
+    {
+        $tenant = Tenant::findOrFail($tenantId);
+        return view('tenant.admin.users.edit', compact('user', 'tenant'));
+    }
+
+    // 3. Update User
+    public function update(Request $request, string $tenantId, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role' => 'required|in:admin,standard',
+            'password' => 'nullable|min:8|confirmed',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('tenant.admin.users.index', $tenantId)
+                         ->with('success', 'Benutzer wurde erfolgreich aktualisiert.');
+    }
+
+    // 4. Delete User
+    public function destroy(string $tenantId, User $user)
+    {
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Sie können sich nicht selbst löschen.');
+        }
+
+        $user->delete();
+        return redirect()->route('tenant.admin.users.index', $tenantId)
+                         ->with('success', 'Benutzer gelöscht.');
+    }
+
+    // 5. Toggle Status (Active/Inactive)
+    public function toggleStatus(string $tenantId, User $user)
+    {
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Status für eigenen Account kann nicht geändert werden.');
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        return back()->with('success', 'Status aktualisiert.');
+    }
 }

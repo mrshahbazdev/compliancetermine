@@ -1,370 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User - {{ $user->name }} - {{ $tenant->subdomain }}</title>
+    <title>Benutzer bearbeiten - {{ $user->name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-50" x-data="{ mobileMenuOpen: false, showPassword: false, selectedRole: '{{ $user->role }}' }">
+<body class="bg-gray-50" x-data="{ showPassword: false, selectedRole: '{{ $user->role }}' }">
 
     @include('tenant.partials.nav')
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center space-x-4 mb-4">
+        <div class="mb-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
                 <a href="{{ route('tenant.admin.users.index', ['tenantId' => $tenant->id]) }}" 
-                   class="text-gray-600 hover:text-gray-900 transition">
-                    <i class="fas fa-arrow-left text-xl"></i>
+                   class="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm text-gray-600 hover:text-blue-600 transition">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
-                <div class="flex-1">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg {{ $user->role_color }}">
-                            {{ $user->initials }}
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900">
-                                Edit User: {{ $user->name }}
-                            </h1>
-                            <p class="text-gray-600 mt-1">{{ $user->email }}</p>
-                        </div>
-                    </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Benutzer bearbeiten</h1>
+                    <p class="text-sm text-gray-500">{{ $user->email }}</p>
                 </div>
             </div>
-
-            <!-- Breadcrumb -->
-            <div class="flex items-center space-x-2 text-sm text-gray-600 ml-14">
-                <a href="{{ route('tenant.dashboard', ['tenantId' => $tenant->id]) }}" class="hover:text-indigo-600">Dashboard</a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <a href="{{ route('tenant.admin.users.index', ['tenantId' => $tenant->id]) }}" class="hover:text-indigo-600">Users</a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-gray-900 font-medium">Edit</span>
-            </div>
-        </div>
-
-        <!-- User Stats -->
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
-                <p class="text-xs text-gray-600 mb-1">Teams</p>
-                <p class="text-2xl font-bold text-blue-600">{{ $user->teams()->count() }}</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
-                <p class="text-xs text-gray-600 mb-1">Ideas Submitted</p>
-                <p class="text-2xl font-bold text-yellow-600">{{ $user->ideas()->count() }}</p>
-            </div>
-            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-                <p class="text-xs text-gray-600 mb-1">Votes Cast</p>
-                <p class="text-2xl font-bold text-green-600">{{ $user->votes()->count() }}</p>
-            </div>
+            
+            <span class="px-4 py-2 rounded-full text-xs font-black uppercase border {{ $user->role === 'admin' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-600 border-blue-200' }}">
+                {{ $user->role }}
+            </span>
         </div>
 
         <form method="POST" action="{{ route('tenant.admin.users.update', ['tenantId' => $tenant->id, 'user' => $user->id]) }}">
             @csrf
             @method('PUT')
 
-            <!-- Basic Information -->
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i class="fas fa-id-card text-indigo-600 mr-2"></i>
-                    Basic Information
-                </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                            <i class="fas fa-user-circle text-blue-600 mr-2"></i> Stammdaten
+                        </h2>
 
-                <div class="space-y-6">
-                    <!-- Full Name -->
-                    <div>
-                        <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-user text-gray-400 mr-2"></i>Full Name *
-                        </label>
-                        <input 
-                            type="text" 
-                            name="name" 
-                            id="name"
-                            value="{{ old('name', $user->name) }}"
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition @error('name') border-red-500 @enderror"
-                        >
-                        @error('name')
-                            <p class="mt-2 text-sm text-red-600">
-                                <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                            </p>
-                        @enderror
-                    </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Vollständiger Name</label>
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
 
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-envelope text-gray-400 mr-2"></i>Email Address *
-                        </label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email"
-                            value="{{ old('email', $user->email) }}"
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition @error('email') border-red-500 @enderror"
-                        >
-                        @error('email')
-                            <p class="mt-2 text-sm text-red-600">
-                                <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    <!-- Password (Optional) -->
-                    <div>
-                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-lock text-gray-400 mr-2"></i>New Password (Optional)
-                        </label>
-                        <div class="relative">
-                            <input 
-                                :type="showPassword ? 'text' : 'password'" 
-                                name="password" 
-                                id="password"
-                                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition @error('password') border-red-500 @enderror"
-                                placeholder="Leave blank to keep current password"
-                            >
-                            <button 
-                                type="button"
-                                @click="showPassword = !showPassword"
-                                class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
-                                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-                            </button>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">E-Mail-Adresse</label>
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
                         </div>
-                        <p class="mt-2 text-xs text-gray-500">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Only fill this if you want to change the password
-                        </p>
-                        @error('password')
-                            <p class="mt-2 text-sm text-red-600">
-                                <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                            </p>
-                        @enderror
                     </div>
-                </div>
-            </div>
 
-            <!-- Role & Permissions -->
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i class="fas fa-user-shield text-indigo-600 mr-2"></i>
-                    Role & Permissions
-                </h2>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-key text-blue-600 mr-2"></i> Passwort ändern
+                        </h2>
+                        <p class="text-xs text-gray-500 mb-4 italic">Leer lassen, wenn das Passwort nicht geändert werden soll.</p>
 
-                <div class="space-y-4">
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <!-- Admin -->
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="admin" x-model="selectedRole" 
-                                   {{ old('role', $user->role) === 'admin' ? 'checked' : '' }}
-                                   class="peer sr-only">
-                            <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-red-300 transition">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center shadow-lg">
-                                        <i class="fas fa-crown text-white text-xl"></i>
-                                    </div>
-                                    <span class="hidden peer-checked:inline-flex w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center">
-                                        <i class="fas fa-check text-xs"></i>
-                                    </span>
-                                </div>
-                                <h3 class="font-bold text-gray-900 mb-2">Admin</h3>
-                                <p class="text-xs text-gray-600">Full system access</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="relative">
+                                <input :type="showPassword ? 'text' : 'password'" name="password" placeholder="Neues Passwort"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-2.5 text-gray-400">
+                                    <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
                             </div>
-                        </label>
-
-                        <!-- Developer -->
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="developer" x-model="selectedRole"
-                                   {{ old('role', $user->role) === 'developer' ? 'checked' : '' }}
-                                   class="peer sr-only">
-                            <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-purple-300 transition">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
-                                        <i class="fas fa-code text-white text-xl"></i>
-                                    </div>
-                                    <span class="hidden peer-checked:inline-flex w-6 h-6 bg-purple-500 text-white rounded-full items-center justify-center">
-                                        <i class="fas fa-check text-xs"></i>
-                                    </span>
-                                </div>
-                                <h3 class="font-bold text-gray-900 mb-2">Developer</h3>
-                                <p class="text-xs text-gray-600">Technical permissions</p>
+                            <div>
+                                <input :type="showPassword ? 'text' : 'password'" name="password_confirmation" placeholder="Passwort bestätigen"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
-                        </label>
-
-                        <!-- Work-Bee -->
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="work-bee" x-model="selectedRole"
-                                   {{ old('role', $user->role) === 'work-bee' ? 'checked' : '' }}
-                                   class="peer sr-only">
-                            <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-green-500 peer-checked:bg-green-50 hover:border-green-300 transition">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-lg">
-                                                                                <i class="fas fa-user-friends text-white text-xl"></i>
-                                    </div>
-                                    <span class="hidden peer-checked:inline-flex w-6 h-6 bg-green-500 text-white rounded-full items-center justify-center">
-                                        <i class="fas fa-check text-xs"></i>
-                                    </span>
-                                </div>
-                                <h3 class="font-bold text-gray-900 mb-2">Work-Bee</h3>
-                                <p class="text-xs text-gray-600">Pain & implementation</p>
-                            </div>
-                        </label>
-
-                        <!-- Standard -->
-                        <label class="cursor-pointer">
-                            <input type="radio" name="role" value="standard" x-model="selectedRole"
-                                   {{ old('role', $user->role) === 'standard' ? 'checked' : '' }}
-                                   class="peer sr-only">
-                            <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300 transition">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center shadow-lg">
-                                        <i class="fas fa-user text-white text-xl"></i>
-                                    </div>
-                                    <span class="hidden peer-checked:inline-flex w-6 h-6 bg-blue-500 text-white rounded-full items-center justify-center">
-                                        <i class="fas fa-check text-xs"></i>
-                                    </span>
-                                </div>
-                                <h3 class="font-bold text-gray-900 mb-2">Standard</h3>
-                                <p class="text-xs text-gray-600">Basic permissions</p>
-                            </div>
-                        </label>
+                        </div>
+                        @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    @error('role')
-                        <p class="mt-2 text-sm text-red-600">
-                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                        </p>
-                    @enderror
-                </div>
-            </div>
 
-            <!-- Account Status -->
-            <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i class="fas fa-toggle-on text-indigo-600 mr-2"></i>
-                    Account Status
-                </h2>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                            <i class="fas fa-user-shield text-blue-600 mr-2"></i> Benutzerrolle
+                        </h2>
 
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <input 
-                                type="checkbox" 
-                                name="is_active" 
-                                id="is_active"
-                                value="1"
-                                {{ old('is_active', $user->is_active) ? 'checked' : '' }}
-                                class="w-5 h-5 text-green-600 rounded focus:ring-2 focus:ring-green-500"
-                            >
-                            <label for="is_active" class="text-sm font-medium text-gray-700">
-                                User account is active
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="role" value="admin" x-model="selectedRole" class="sr-only">
+                                <div :class="selectedRole === 'admin' ? 'border-red-500 bg-red-50' : 'border-gray-200'" 
+                                     class="p-4 border-2 rounded-xl transition hover:border-red-200">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <i class="fas fa-crown" :class="selectedRole === 'admin' ? 'text-red-600' : 'text-gray-400'"></i>
+                                        <div x-show="selectedRole === 'admin'" class="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-[8px] text-white"></i>
+                                        </div>
+                                    </div>
+                                    <p class="font-bold text-sm">Superuser</p>
+                                    <p class="text-[10px] text-gray-500">Voller Systemzugriff</p>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="role" value="standard" x-model="selectedRole" class="sr-only">
+                                <div :class="selectedRole === 'standard' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'" 
+                                     class="p-4 border-2 rounded-xl transition hover:border-blue-200">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <i class="fas fa-user-check" :class="selectedRole === 'standard' ? 'text-blue-600' : 'text-gray-400'"></i>
+                                        <div x-show="selectedRole === 'standard'" class="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-[8px] text-white"></i>
+                                        </div>
+                                    </div>
+                                    <p class="font-bold text-sm">Verantwortlicher</p>
+                                    <p class="text-[10px] text-gray-500">Eingeschränkter Zugriff</p>
+                                </div>
                             </label>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                            <i class="fas fa-circle text-xs mr-1 {{ $user->is_active ? 'text-green-500' : 'text-gray-400' }}"></i>
-                            {{ $user->is_active ? 'Active' : 'Inactive' }}
-                        </span>
                     </div>
-                    <p class="text-xs text-gray-500 ml-8">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Inactive users cannot login to the system
-                    </p>
                 </div>
-            </div>
 
-            <!-- Account Information -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg p-8 mb-6 border border-blue-200">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                    Account Information
-                </h2>
-
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-xs text-gray-600 mb-1">Member Since</p>
-                        <p class="text-sm font-semibold text-gray-900">
-                            {{ $user->created_at->format('F d, Y') }}
-                        </p>
-                        <p class="text-xs text-gray-500">{{ $user->created_at->diffForHumans() }}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-xs text-gray-600 mb-1">Last Updated</p>
-                        <p class="text-sm font-semibold text-gray-900">
-                            {{ $user->updated_at->format('F d, Y') }}
-                        </p>
-                        <p class="text-xs text-gray-500">{{ $user->updated_at->diffForHumans() }}</p>
-                    </div>
-
-                    @if($user->last_login_at)
-                        <div>
-                            <p class="text-xs text-gray-600 mb-1">Last Login</p>
-                            <p class="text-sm font-semibold text-gray-900">
-                                {{ $user->last_login_at->format('F d, Y g:i A') }}
-                            </p>
-                            <p class="text-xs text-gray-500">{{ $user->last_login_at->diffForHumans() }}</p>
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-widest">Account Status</h2>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="text-sm font-medium">Aktiviert</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_active" value="1" {{ $user->is_active ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
                         </div>
-                    @endif
-
-                    <div>
-                        <p class="text-xs text-gray-600 mb-1">User ID</p>
-                        <p class="text-sm font-mono font-semibold text-gray-900">{{ $user->id }}</p>
+                        <p class="text-[10px] text-gray-400 mt-3 italic">Inaktive Benutzer können sich nicht anmelden.</p>
                     </div>
-                </div>
-            </div>
 
-            <!-- Warning for Self-Edit -->
-            @if($user->id === Auth::id())
-                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-exclamation-triangle text-yellow-600 text-xl mr-3 mt-1"></i>
-                        <div>
-                            <p class="text-sm font-semibold text-yellow-900 mb-1">You are editing your own account</p>
-                            <p class="text-xs text-yellow-800">
-                                Be careful when changing your role or deactivating your account as it may affect your access to the system.
-                            </p>
+                    <div class="bg-blue-600 rounded-2xl p-6 text-white shadow-lg shadow-blue-200">
+                        <h2 class="text-xs font-bold uppercase mb-4 opacity-75">System-Info</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-[10px] opacity-75">Mitglied seit</p>
+                                <p class="text-sm font-bold">{{ $user->created_at->format('d.m.Y') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] opacity-75">Letztes Update</p>
+                                <p class="text-sm font-bold">{{ $user->updated_at->format('d.m.Y H:i') }}</p>
+                            </div>
+                            <div class="pt-4 border-t border-white/20 text-center">
+                                <p class="text-[10px] opacity-75 italic">Benutzer-ID: {{ $user->id }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endif
 
-            <!-- Form Actions -->
-            <div class="flex items-center justify-between">
-                <a href="{{ route('tenant.admin.users.index', ['tenantId' => $tenant->id]) }}" 
-                   class="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition font-semibold">
-                    <i class="fas fa-times mr-2"></i>Cancel
-                </a>
-                <div class="flex items-center space-x-3">
-                    @if($user->id !== Auth::id())
-                        <button 
-                            type="button"
-                            onclick="if(confirm('Are you sure you want to delete this user?')) { document.getElementById('delete-form').submit(); }"
-                            class="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
-                            <i class="fas fa-trash mr-2"></i>Delete User
+                    <div class="pt-4 space-y-3">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                            <i class="fas fa-save mr-2"></i> Speichern
                         </button>
-                    @endif
-                    <button 
-                        type="submit"
-                        class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg transform hover:scale-105">
-                        <i class="fas fa-save mr-2"></i>Save Changes
-                    </button>
+                        <a href="{{ route('tenant.admin.users.index', ['tenantId' => $tenant->id]) }}" class="block text-center w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 transition">
+                            Abbrechen
+                        </a>
+                    </div>
                 </div>
             </div>
-
         </form>
-
-        <!-- Delete Form (Hidden) -->
-        @if($user->id !== Auth::id())
-            <form id="delete-form" method="POST" action="{{ route('tenant.admin.users.destroy', ['tenantId' => $tenant->id, 'user' => $user->id]) }}" class="hidden">
-                @csrf
-                @method('DELETE')
-            </form>
-        @endif
-
     </div>
-
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 </body>
 </html>
