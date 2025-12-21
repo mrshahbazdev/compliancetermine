@@ -53,6 +53,10 @@
                         <a href="{{ route('tenant.employees.edit', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" class="text-blue-500 hover:text-blue-700">
                             <i class="fas fa-edit"></i>
                         </a>
+                        <a href="{{ route('tenant.trainings.employee.index', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" 
+                        class="text-emerald-600 hover:text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md text-sm font-bold transition">
+                            <i class="fas fa-graduation-cap mr-1"></i> Schulungen
+                        </a>
                         <form action="{{ route('tenant.employees.destroy', ['tenantId' => request()->tenantId, 'employee' => $employee->id]) }}" method="POST" class="inline" onsubmit="return confirm('Mitarbeiter wirklich löschen?')">
                             @csrf
                             @method('DELETE')
