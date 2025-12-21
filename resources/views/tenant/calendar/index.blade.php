@@ -1,14 +1,45 @@
 @extends('layouts.tenant')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 text-center">
-    <div class="bg-white p-12 rounded-xl shadow-sm border border-slate-200">
-        <i class="fas fa-calendar-alt text-blue-500 text-6xl mb-4"></i>
-        <h1 class="text-3xl font-bold text-slate-800">Terminkalender</h1>
-        <p class="text-slate-500 mt-2 text-lg">In Phase 5 werden hier alle Termine visuell dargestellt.</p>
-        <div class="mt-8 p-4 bg-blue-50 text-blue-700 rounded-lg inline-block border border-blue-100">
-            <i class="fas fa-info-circle mr-2"></i> Phase 3 (Data Entry) testing jaari hai.
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-slate-800">Schulungskalender</h1>
+        <div class="flex space-x-4">
+            <span class="flex items-center text-sm"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Kritisch</span>
+            <span class="flex items-center text-sm"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> Geplant</span>
         </div>
     </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div id="calendar"></div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'de', // German language
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            events: @json($events), // Controller se events yahan ayenge
+            eventClick: function(info) {
+                alert('Mitarbeiter: ' + info.event.title + '\nKategorie: ' + info.event.extendedProps.category);
+            }
+        });
+        calendar.render();
+    });
+</script>
+
+<style>
+    .fc-event { cursor: pointer; border: none; padding: 2px; }
+    .fc-toolbar-title { font-weight: bold; color: #1e293b; }
+    .fc-button-primary { background-color: #2563eb !important; border: none !important; }
+</style>
 @endsection

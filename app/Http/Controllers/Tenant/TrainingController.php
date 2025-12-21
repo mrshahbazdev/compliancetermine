@@ -64,9 +64,21 @@ class TrainingController extends Controller
      */
     public function calendar(string $tenantId)
     {
-        $tenant = Tenant::findOrFail($tenantId);
-        
-        // Abhi ke liye sirf view return karte hain, data hum Phase 5 mein fetch karenge
-        return view('tenant.calendar.index', compact('tenant'));
+        $trainings = Training::with(['employee', 'category'])->get();
+
+        $events = $trainings->map(function ($training) {
+            $daysLeft = now()->diffInDays($training->expiry_date, false);
+            
+            return [
+                'title' => $training->employee->name . ' (' . $training->category->name . ')',
+                'start' => $training->expiry_date->format('Y-m-d'),
+                'color' => $daysLeft <= 90 ? '#ef4444' : '#3b82f6', // Red for critical, Blue for OK
+                'extendedProps' => [
+                    'category' => $training->category->name
+                ]
+            ];
+        });
+
+        return view('tenant.calendar.index', compact('events'));
     }
 }
