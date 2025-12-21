@@ -147,17 +147,13 @@
                                 </td>
                                 <td class="px-8 py-5 text-right">
                                     @if($training->certificate_path)
-                                        <a href="{{ asset('storage/' . $training->certificate_path) }}" target="_blank" 
-                                           class="inline-flex items-center justify-center w-10 h-10 bg-slate-900 text-white rounded-2xl hover:bg-blue-600 shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
+                                        <a href="{{ route('tenant.certificates.view', [request()->tenantId, $training->id]) }}" 
+                                        target="_blank" 
+                                        class="inline-flex items-center justify-center w-10 h-10 bg-slate-900 text-white rounded-2xl hover:bg-blue-600 shadow-lg transition transform hover:-translate-y-0.5"
+                                        title="Zertifikat ansehen">
+                                            <i class="fas fa-eye"></i> </a>
                                     @else
-                                        <div class="group relative inline-block">
-                                            <span class="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-300 border border-dashed border-slate-200">
-                                                <i class="fas fa-file-slash"></i>
-                                            </span>
-                                            <div class="absolute bottom-full right-0 mb-2 hidden group-hover:block bg-slate-800 text-white text-[9px] p-2 rounded w-24 text-center">Kein Zertifikat</div>
-                                        </div>
+                                        <span class="text-slate-300 text-xs italic">N/A</span>
                                     @endif
                                 </td>
                             </tr>

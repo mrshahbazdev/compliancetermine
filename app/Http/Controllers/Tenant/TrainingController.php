@@ -7,9 +7,33 @@ use App\Models\{Employee, Category, Training};
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 class TrainingController extends Controller
 {
+    
+
+    public function viewCertificate(string $tenantId, Training $training)
+    {
+        // Security Check: Kya user ko is employee ka data dekhne ki ijazat hai?
+        $user = auth()->user();
+        if (!$user->isAdmin() && !$training->employee->responsibles->contains($user->id)) {
+            abort(403);
+        }
+
+        if (!$training->certificate_path || !Storage::disk('public')->exists($training->certificate_path)) {
+            abort(404, 'Zertifikat nicht gefunden.');
+        }
+
+        $path = Storage::disk('public')->path($training->certificate_path);
+        $mimeType = Storage::disk('public')->mimeType($training->certificate_path);
+
+        // 'inline' header file ko browser mein open karta hai (download nahi karta)
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="'.basename($path).'"'
+        ]);
+    }
     /**
      * View: Employee ki trainings list aur naya plan karne ka form
      */

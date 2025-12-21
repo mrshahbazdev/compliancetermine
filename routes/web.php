@@ -61,7 +61,7 @@ Route::prefix('tenant/{tenantId}')
             // Overview & Matrix (Hamesha shared access)
             Route::get('/overview', [EmployeeController::class, 'overview'])->name('employees.overview');
             Route::get('/calendar', [TrainingController::class, 'calendar'])->name('calendar');
-
+            Route::get('/certificates/view/{training}', [TrainingController::class, 'viewCertificate'])->name('certificates.view');
             // Employee Management (Standard User sirf assigned dekh sakega, Admin sab - Logic Controller mein handle hai)
             Route::resource('employees', EmployeeController::class);
 
