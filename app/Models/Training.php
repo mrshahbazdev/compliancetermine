@@ -30,7 +30,8 @@ class Training extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'last_event_date' => 'date',
+        'training_date' => 'date',
+        'last_event_date' => 'date', // Purane data ke liye
         'expiry_date' => 'date',
     ];
 
