@@ -92,7 +92,7 @@
                                 Zum Mitarbeiter-Kalender
                             </a>
                         @else
-                            <a href="{{ route('tenant.login', ['tenantId' => $tenant?->id ?? 'default']) }}" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition shadow-xl">
+                            <a href="https://cip-tools.de/register" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition shadow-xl">
                                 Jetzt Anmelden
                             </a>
                         @endauth
