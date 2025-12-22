@@ -195,43 +195,48 @@
     </section>
 
     <footer class="bg-white border-t border-slate-200 py-12">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-slate-500 font-medium">
-                &copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.
-            </p>
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="text-slate-500 font-medium">
+            &copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.
+        </p>
 
-            <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
-                @php
-                    // Check karein ke hum tenant context mein hain ya central
-                    $routePrefix = isset($tenant) ? 'tenant.legal.' : 'legal.';
-                    $routeParam = isset($tenant) ? ['tenantId' => $tenant->id] : [];
-                @endphp
-
-                <a href="{{ route($routePrefix . 'impressum', $routeParam) }}" 
-                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                    Impressum
-                </a>
+        <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
+            @php
+                // Logic to determine if we are in a tenant context
+                // 'tenant' variable aksar middleware se aata hai
+                $isTenant = isset($tenant) && $tenant !== null;
                 
-                <a href="{{ route($routePrefix . 'datenschutz', $routeParam) }}" 
-                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                    Datenschutz
-                </a>
-                
-                <a href="{{ route($routePrefix . 'terms', $routeParam) }}" 
-                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                    Nutzungsbedingungen
-                </a>
-            </div>
+                // Route names matching your routes/tenant.php and routes/web.php
+                $impressumRoute = $isTenant ? route('tenant.legal.impressum', ['tenantId' => $tenant->id]) : route('legal.impressum');
+                $datenschutzRoute = $isTenant ? route('tenant.legal.datenschutz', ['tenantId' => $tenant->id]) : route('legal.datenschutz');
+                $termsRoute = $isTenant ? route('tenant.legal.terms', ['tenantId' => $tenant->id]) : route('legal.terms');
+            @endphp
 
-            @if(isset($tenant))
-                <div class="mt-6 pt-6 border-t border-slate-50">
-                    <p class="text-[10px] text-slate-300 uppercase tracking-[0.2em] font-black">
-                        Mandant: <span class="text-slate-400">{{ $tenant->subdomain }}</span>
-                    </p>
-                </div>
-            @endif
+            <a href="{{ $impressumRoute }}" 
+               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                Impressum
+            </a>
+            
+            <a href="{{ $datenschutzRoute }}" 
+               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                Datenschutz
+            </a>
+            
+            <a href="{{ $termsRoute }}" 
+               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                Nutzungsbedingungen
+            </a>
         </div>
-    </footer>
+
+        @if(isset($tenant))
+            <div class="mt-6 pt-6 border-t border-slate-50">
+                <p class="text-[10px] text-slate-300 uppercase tracking-[0.2em] font-black">
+                    Mandant: <span class="text-slate-400">{{ $tenant->subdomain }}</span>
+                </p>
+            </div>
+        @endif
+    </div>
+</footer>
 
 </body>
 </html>
