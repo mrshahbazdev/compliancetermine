@@ -200,27 +200,19 @@
             &copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.
         </p>
 
-        @php
-            // Check karein ke hum subdomain par hain ya central domain par
+       @php
             $isTenant = isset($tenant) && $tenant !== null;
         @endphp
 
         <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
-            {{-- Tenant context mein parameters ki zaroorat nahi hoti Stancl Tenancy mein --}}
             <a href="{{ $isTenant ? route('tenant.legal.impressum') : route('legal.impressum') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                Impressum
-            </a>
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Impressum</a>
             
             <a href="{{ $isTenant ? route('tenant.legal.datenschutz') : route('legal.datenschutz') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                Datenschutz
-            </a>
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Datenschutz</a>
             
             <a href="{{ $isTenant ? route('tenant.legal.terms') : route('legal.terms') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
-                Nutzungsbedingungen
-            </a>
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Nutzungsbedingungen</a>
         </div>
 
         @if(isset($tenant))
