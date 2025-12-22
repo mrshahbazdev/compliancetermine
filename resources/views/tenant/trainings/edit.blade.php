@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-3xl mx-auto py-10">
     <div class="mb-8">
-        <a href="{{ route('tenant.trainings.index', [request()->tenantId, $training->employee_id]) }}" class="text-slate-400 hover:text-blue-600 transition flex items-center text-sm font-bold uppercase tracking-widest">
+        <a href="{{ route('tenant.trainings.employee.index', [request()->tenantId, $training->employee_id]) }}" class="text-slate-400 hover:text-blue-600 transition flex items-center text-sm font-bold uppercase tracking-widest">
             <i class="fas fa-arrow-left mr-2"></i> Zurück zur Liste
         </a>
         <h2 class="text-3xl font-black text-slate-900 mt-4 italic">Eintrag bearbeiten</h2>
