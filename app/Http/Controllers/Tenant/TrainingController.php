@@ -198,10 +198,13 @@ class TrainingController extends Controller
     }
     public function destroy(string $tenantId, Training $training)
     {
+        // Agar certificate file hai toh usey storage se delete karein
         if ($training->certificate_path) {
-            \Storage::disk('public')->delete($training->certificate_path);
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($training->certificate_path);
         }
+
         $training->delete();
-        return redirect()->back()->with('success', 'Eintrag gelöscht!');
+
+        return redirect()->back()->with('success', 'Eintrag wurde erfolgreich gelöscht.');
     }
 }
