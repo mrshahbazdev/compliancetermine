@@ -9,31 +9,23 @@ use App\Http\Controllers\Tenant\LegalController;
 use App\Http\Controllers\Tenant\{DashboardController, UpgradeController};
 use App\Http\Controllers\Tenant\Auth\LoginController;
 
-/*
-|--------------------------------------------------------------------------
-| Tenant Routes
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware([
     'web',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
-    'tenant.check'
 ])->group(function () {
 
-    // 1. PUBLIC LEGAL ROUTES (Sab ke liye, bina login ke bhi)
-    // Inhein 'tenant.' prefix ke andar hona chahiye taake parameter missing na ho
+    // 1. PUBLIC LEGAL ROUTES (Bina login aur bina tenant.check ke)
     Route::name('tenant.legal.')->group(function () {
         Route::get('/impressum', [LegalController::class, 'impressum'])->name('impressum');
         Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('datenschutz');
-        Route::get('/nutzungsbedingungen', [LegalController::class, 'terms'])->name('terms');
+        Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
     });
 
-    // 2. TENANT CHECK MIDDLEWARE GROUP
+    // 2. TENANT CHECK MIDDLEWARE GROUP (Sirf Dashboard aur Auth ke liye)
     Route::middleware(['tenant.check'])->group(function () {
         
-        // Upgrade page (subscription expired)
+        // Upgrade page
         Route::get('/upgrade', [UpgradeController::class, 'index'])
             ->name('tenant.upgrade')
             ->withoutMiddleware('tenant.check');
@@ -43,11 +35,9 @@ Route::middleware([
         Route::post('/login', [LoginController::class, 'login']);
         Route::post('/logout', [LoginController::class, 'logout'])->name('tenant.logout');
         
-        // 3. PROTECTED ROUTES (Login required)
+        // 3. PROTECTED ROUTES
         Route::middleware('auth')->group(function () {
             Route::get('/', [DashboardController::class, 'index'])->name('tenant.dashboard');
-            
-            // Yahan aapke baaki resources aayenge:
             // Route::resource('employees', EmployeeController::class);
         });
     });
