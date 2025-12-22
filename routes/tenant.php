@@ -16,11 +16,9 @@ Route::middleware([
 ])->group(function () {
 
     // 1. PUBLIC LEGAL ROUTES (Bina login aur bina tenant.check ke)
-    Route::name('tenant.legal.')->group(function () {
-        Route::get('/impressum', [LegalController::class, 'impressum'])->name('impressum');
-        Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('datenschutz');
-        Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
-    });
+    Route::get('/impressum', [LegalController::class, 'impressum'])->name('tenant.legal.impressum');
+    Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('tenant.legal.datenschutz');
+    Route::get('/nutzungsbedingungen', [LegalController::class, 'terms'])->name('tenant.legal.terms');
 
     // 2. TENANT CHECK MIDDLEWARE GROUP (Sirf Dashboard aur Auth ke liye)
     Route::middleware(['tenant.check'])->group(function () {

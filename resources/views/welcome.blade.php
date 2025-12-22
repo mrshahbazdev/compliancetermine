@@ -202,17 +202,27 @@
 
        @php
             $isTenant = isset($tenant) && $tenant !== null;
+            
+            // Default Fallback Links (In case routes are not found)
+            $impLink = '#';
+            $datLink = '#';
+            $terLink = '#';
+
+            if ($isTenant) {
+                if (Route::has('tenant.legal.impressum')) $impLink = route('tenant.legal.impressum');
+                if (Route::has('tenant.legal.datenschutz')) $datLink = route('tenant.legal.datenschutz');
+                if (Route::has('tenant.legal.terms')) $terLink = route('tenant.legal.terms');
+            } else {
+                if (Route::has('legal.impressum')) $impLink = route('legal.impressum');
+                if (Route::has('legal.datenschutz')) $datLink = route('legal.datenschutz');
+                if (Route::has('legal.terms')) $terLink = route('legal.terms');
+            }
         @endphp
 
         <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
-            <a href="{{ $isTenant ? route('tenant.legal.impressum') : route('legal.impressum') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Impressum</a>
-            
-            <a href="{{ $isTenant ? route('tenant.legal.datenschutz') : route('legal.datenschutz') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Datenschutz</a>
-            
-            <a href="{{ $isTenant ? route('tenant.legal.terms') : route('legal.terms') }}" 
-            class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Nutzungsbedingungen</a>
+            <a href="{{ $impLink }}" class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Impressum</a>
+            <a href="{{ $datLink }}" class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Datenschutz</a>
+            <a href="{{ $terLink }}" class="text-xs font-bold text-slate-400 hover:text-blue-600 transition">Nutzungsbedingungen</a>
         </div>
 
         @if(isset($tenant))
