@@ -47,54 +47,51 @@
             </div>
         </a>
 
-        <a href="{{ route('tenant.categories.index', request()->tenantId) }}" 
-           class="group bg-white border border-slate-200 rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-500/50 relative overflow-hidden">
-            <div class="relative flex items-center justify-between">
-                <div class="space-y-1">
-                    <p class="text-slate-500 text-[11px] font-black uppercase tracking-widest group-hover:text-indigo-600 transition">Kategorien</p>
-                    <p class="text-4xl font-black text-slate-900 tracking-tighter">{{ $stats['total_categories'] ?? 0 }}</p>
-                </div>
-                <div class="bg-indigo-600 w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform">
-                    <i class="fas fa-tags text-xl"></i>
-                </div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-50 flex items-center text-[10px] font-bold text-slate-400 uppercase group-hover:text-indigo-500">
-                <i class="fas fa-cog mr-2"></i> Typen verwalten
-            </div>
-        </a>
-
-        <a href="{{ route('tenant.calendar', request()->tenantId) }}" 
-           class="group bg-red-600 border border-red-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-red-700 relative overflow-hidden">
+        <div class="group bg-red-600 border border-red-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-red-700 relative overflow-hidden">
             <div class="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full -translate-x-8 -translate-y-8 blur-2xl"></div>
             <div class="relative flex items-center justify-between">
                 <div class="space-y-1">
-                    <p class="text-red-100 text-[11px] font-black uppercase tracking-widest italic opacity-80">Kritisch (< 90 Tage)</p>
-                    <p class="text-4xl font-black text-white tracking-tighter">{{ $stats['critical_trainings'] ?? 0 }}</p>
+                    <p class="text-red-100 text-[11px] font-black uppercase tracking-widest italic opacity-80">Abgelaufen</p>
+                    <p class="text-4xl font-black text-white tracking-tighter">{{ $stats['expired'] ?? 0 }}</p>
                 </div>
-                <div class="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-white/30 animate-pulse group-hover:animate-none group-hover:scale-110 transition-transform">
+                <div class="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-white/30 animate-pulse group-hover:animate-none">
                     <i class="fas fa-exclamation-triangle text-xl text-yellow-300"></i>
                 </div>
             </div>
             <div class="mt-6 pt-4 border-t border-white/20 flex items-center text-[10px] font-bold text-white uppercase italic">
-                <i class="fas fa-bolt mr-2 text-yellow-300"></i> Handlungsbedarf prüfen
+                <i class="fas fa-bolt mr-2 text-yellow-300"></i> Kritische Fehler
             </div>
-        </a>
+        </div>
 
-        <a href="{{ route('tenant.employees.overview', request()->tenantId) }}" 
-           class="group bg-emerald-600 border border-emerald-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-700 relative overflow-hidden text-white">
+        <div class="group bg-orange-500 border border-orange-600 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 relative overflow-hidden">
             <div class="relative flex items-center justify-between">
                 <div class="space-y-1">
-                    <p class="text-emerald-100 text-[11px] font-black uppercase tracking-widest opacity-80">Zertifikate</p>
-                    <p class="text-4xl font-black text-white tracking-tighter">{{ $stats['total_certificates'] ?? 0 }}</p>
+                    <p class="text-orange-50 text-[11px] font-black uppercase tracking-widest opacity-80 italic">Ablaufend (30T)</p>
+                    <p class="text-4xl font-black text-white tracking-tighter">{{ $stats['warning'] ?? 0 }}</p>
                 </div>
-                <div class="bg-white w-14 h-14 rounded-2xl flex items-center justify-center text-emerald-600 shadow-lg group-hover:rotate-12 transition-transform">
-                    <i class="fas fa-certificate text-xl"></i>
+                <div class="bg-white/20 w-14 h-14 rounded-2xl flex items-center justify-center text-white">
+                    <i class="fas fa-clock text-xl"></i>
                 </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-emerald-500/50 flex items-center text-[10px] font-bold text-emerald-100 uppercase">
-                <i class="fas fa-layer-group mr-2"></i> Matrix-Ansicht
+            <div class="mt-6 pt-4 border-t border-white/20 flex items-center text-[10px] font-bold text-white uppercase">
+                <i class="fas fa-hourglass-half mr-2"></i> Demnächst fällig
             </div>
-        </a>
+        </div>
+
+        <div class="group bg-indigo-600 border border-indigo-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 relative overflow-hidden text-white">
+            <div class="relative flex items-center justify-between">
+                <div class="space-y-1">
+                    <p class="text-indigo-100 text-[11px] font-black uppercase tracking-widest opacity-80">Geplant</p>
+                    <p class="text-4xl font-black text-white tracking-tighter">{{ $stats['planned'] ?? 0 }}</p>
+                </div>
+                <div class="bg-white w-14 h-14 rounded-2xl flex items-center justify-center text-indigo-600 shadow-lg group-hover:rotate-12 transition-transform">
+                    <i class="fas fa-calendar-alt text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-indigo-500/50 flex items-center text-[10px] font-bold text-indigo-100 uppercase">
+                <i class="fas fa-tasks mr-2"></i> Offene Termine
+            </div>
+        </div>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-8">
@@ -106,8 +103,8 @@
                         <i class="fas fa-history"></i>
                     </div>
                     <div>
-                        <h3 class="font-black text-slate-800 tracking-tight uppercase text-sm">Anstehende Termine</h3>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Nächste 10 Schulungen</p>
+                        <h3 class="font-black text-slate-800 tracking-tight uppercase text-sm">Dringende Termine</h3>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Top 10 fällige Schulungen</p>
                     </div>
                 </div>
                 <a href="{{ route('tenant.calendar', ['tenantId' => request()->tenantId]) }}" 
@@ -149,15 +146,15 @@
                                 </td>
                                 <td class="px-8 py-5 text-right">
                                     @php
-                                        $daysLeft = round(now()->diffInDays($training->expiry_date, false));
+                                        $daysLeft = round(now()->startOfDay()->diffInDays($training->expiry_date->startOfDay(), false));
                                     @endphp
                                     @if($daysLeft < 0)
                                         <span class="px-3 py-1.5 bg-red-100 text-red-600 text-[10px] font-black rounded-xl border border-red-200 uppercase tracking-tighter">
-                                            {{ abs($daysLeft) }} Tage überfällig
+                                            Überfällig
                                         </span>
-                                    @elseif($daysLeft <= 90)
-                                        <span class="px-3 py-1.5 bg-orange-100 text-orange-700 text-[10px] font-black rounded-xl border border-orange-200 uppercase tracking-tighter animate-pulse">
-                                            Ablauf in {{ $daysLeft }} Tagen
+                                    @elseif($daysLeft <= 30)
+                                        <span class="px-3 py-1.5 bg-orange-100 text-orange-700 text-[10px] font-black rounded-xl border border-orange-200 uppercase tracking-tighter">
+                                            Binnen {{ $daysLeft }} Tagen
                                         </span>
                                     @else
                                         <span class="px-3 py-1.5 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded-xl border border-emerald-200 uppercase tracking-tighter">
@@ -168,11 +165,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-8 py-20 text-center">
-                                    <div class="w-16 h-16 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-inner">
-                                        <i class="fas fa-check-circle text-2xl"></i>
-                                    </div>
-                                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest italic">Keine anstehenden Termine gefunden.</p>
+                                <td colspan="4" class="px-8 py-20 text-center text-slate-400 italic font-bold uppercase text-xs tracking-widest">
+                                    Keine dringenden Termine.
                                 </td>
                             </tr>
                         @endforelse
@@ -185,18 +179,13 @@
             <div class="bg-slate-900 rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden group">
                 <div class="absolute right-0 top-0 w-32 h-32 bg-blue-500/20 rounded-full -translate-x-4 -translate-y-8 blur-3xl"></div>
                 <h3 class="font-black text-xs uppercase tracking-[0.2em] mb-6 flex items-center text-blue-400">
-                    <i class="fas fa-bolt mr-2"></i> Aktionen
+                    <i class="fas fa-bolt mr-2"></i> Schnellzugriff
                 </h3>
                 <div class="space-y-4 relative z-10">
                     <a href="{{ route('tenant.employees.create', ['tenantId' => request()->tenantId]) }}" 
                        class="group/btn flex items-center justify-between w-full bg-blue-600 hover:bg-white hover:text-blue-600 p-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-lg shadow-blue-900/50">
                         <span>Neuer Mitarbeiter</span>
                         <i class="fas fa-plus transition-transform group-hover/btn:rotate-90"></i>
-                    </a>
-                    <a href="{{ route('tenant.categories.index', ['tenantId' => request()->tenantId]) }}" 
-                       class="flex items-center justify-between w-full bg-white/10 hover:bg-white/20 p-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border border-white/10">
-                        <span>Kategorien</span>
-                        <i class="fas fa-chevron-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
@@ -210,15 +199,15 @@
                     @foreach($recentUsers as $admin)
                         <div class="flex items-center justify-between group">
                             <div class="flex items-center space-x-4">
-                                <div class="w-11 h-11 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-black border border-slate-100 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition duration-300 shadow-sm">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-black border border-slate-100 group-hover:bg-blue-600 group-hover:text-white transition duration-300 shadow-sm">
                                     {{ strtoupper(substr($admin->name, 0, 1)) }}
                                 </div>
                                 <div class="space-y-1">
                                     <p class="text-sm font-black text-slate-900 tracking-tight leading-none">{{ $admin->name }}</p>
-                                    <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">{{ $admin->role }}</p>
+                                    <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Administrator</p>
                                 </div>
                             </div>
-                            <div class="w-2.5 h-2.5 rounded-full {{ $admin->is_active ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-200' }} animate-pulse"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                         </div>
                     @endforeach
                 </div>
@@ -226,21 +215,17 @@
         </div>
     </div>
 
-    <footer class="py-12 flex flex-col items-center justify-center space-y-4">
+    <footer class="py-12 flex flex-col items-center justify-center space-y-4 text-slate-300">
         <div class="h-px w-24 bg-slate-200"></div>
-        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
-            © {{ date('Y') }} {{ $tenant->subdomain }} • ComplianceTermine
+        <p class="text-[10px] font-black uppercase tracking-[0.4em]">
+            © {{ date('Y') }} {{ strtoupper($tenant->subdomain) }} • COMPLIANCETERMINE
         </p>
     </footer>
 </div>
 
 <style>
-    /* Premium Shadows & Transitions */
     .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02); }
-    tr:last-child { border-bottom: none; }
-    
-    /* Smooth transition for all elements */
-    * { transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
+    * { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
 </style>
 @endsection

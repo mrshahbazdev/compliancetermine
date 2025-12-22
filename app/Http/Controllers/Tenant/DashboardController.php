@@ -7,6 +7,7 @@ use App\Models\{Tenant, User, Employee, Category, Training};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -15,81 +16,84 @@ class DashboardController extends Controller
         $tenant = Tenant::findOrFail($tenantId);
         $user = Auth::user();
 
-        // Check if user is admin/superuser
+        // Admin dashboard full access ke liye
         if ($user->isAdmin()) {
             return $this->adminDashboard($tenant, $user);
         }
 
-        // Regular responsible person dashboard
+        // Regular user dashboard assigned employees ke liye
         return $this->userDashboard($tenant, $user);
     }
 
     /**
-     * Admin Dashboard: Full Overview for the Tenant
+     * Admin Dashboard: Full Overview (Global Scopes will handle tenant isolation)
      */
     private function adminDashboard(Tenant $tenant, User $user): View
     {
-        // Statistics for the whole company
+        $today = Carbon::today();
+        $warningDate = Carbon::today()->addDays(30);
+
         $stats = [
             'total_employees'   => Employee::count(),
-            'total_categories'  => Category::count(),
-            'critical_trainings'=> Training::whereDate('expiry_date', '<=', now()->addDays(90))
-                                           ->whereDate('expiry_date', '>=', now())
-                                           ->count(),
+            'expired'           => Training::where('expiry_date', '<', $today)
+                                         ->where('status', 'completed')->count(),
+            'warning'           => Training::whereBetween('expiry_date', [$today, $warningDate])
+                                         ->where('status', 'completed')->count(),
+            'planned'           => Training::where('status', 'planned')->count(),
             'total_certificates'=> Training::whereNotNull('certificate_path')->count(),
         ];
 
-        // Next 10 upcoming or critical trainings
+        // Top 10 Urgent Trainings across the company
         $expiringTrainings = Training::with(['employee', 'category'])
+            ->where('status', 'completed')
             ->orderBy('expiry_date', 'asc')
             ->take(10)
             ->get();
 
-        // List of admins/responsible persons
+        // Recent users (Managers) added in this tenant
         $recentUsers = User::where('tenant_id', $tenant->id)
             ->latest()
-            ->take(10)
+            ->take(5)
             ->get();
 
         return view('tenant.dashboard.admin', compact(
-            'tenant',
-            'user',
-            'stats',
-            'expiringTrainings',
-            'recentUsers'
+            'tenant', 'user', 'stats', 'expiringTrainings', 'recentUsers'
         ));
     }
 
     /**
-     * Regular Responsible Person Dashboard: Limited to their assigned employees
+     * User Dashboard: Limited to assigned employees
      */
     private function userDashboard(Tenant $tenant, User $user): View
     {
-        // Get only employees assigned to this specific user
+        $today = Carbon::today();
+        $warningDate = Carbon::today()->addDays(30);
+
+        // Get only IDs of employees this user is responsible for
         $assignedEmployeeIds = $user->responsibleForEmployees()->pluck('employees.id');
 
         $stats = [
             'total_employees'   => $assignedEmployeeIds->count(),
-            'critical_trainings'=> Training::whereIn('employee_id', $assignedEmployeeIds)
-                                           ->whereDate('expiry_date', '<=', now()->addDays(90))
-                                           ->count(),
-            'total_certificates'=> Training::whereIn('employee_id', $assignedEmployeeIds)
-                                           ->whereNotNull('certificate_path')
-                                           ->count(),
+            'expired'           => Training::whereIn('employee_id', $assignedEmployeeIds)
+                                         ->where('expiry_date', '<', $today)
+                                         ->where('status', 'completed')->count(),
+            'warning'           => Training::whereIn('employee_id', $assignedEmployeeIds)
+                                         ->whereBetween('expiry_date', [$today, $warningDate])
+                                         ->where('status', 'completed')->count(),
+            'planned'           => Training::whereIn('employee_id', $assignedEmployeeIds)
+                                         ->where('status', 'planned')->count(),
         ];
 
-        // Trainings only for their assigned employees
+        // Urgent Trainings only for assigned employees
         $expiringTrainings = Training::with(['employee', 'category'])
             ->whereIn('employee_id', $assignedEmployeeIds)
+            ->where('status', 'completed')
             ->orderBy('expiry_date', 'asc')
             ->take(10)
             ->get();
 
         return view('tenant.dashboard.user', compact(
-            'tenant',
-            'user',
-            'stats',
-            'expiringTrainings'
+            'tenant', 'user', 'stats', 'expiringTrainings'
         ));
     }
 }

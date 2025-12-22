@@ -18,45 +18,54 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Meine Mitarbeiter</p>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Mitarbeiter</p>
                     <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_employees'] ?? 0 }}</p>
                 </div>
                 <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600">
-                    <i class="fas fa-user-check text-xl"></i>
+                    <i class="fas fa-users text-xl"></i>
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-slate-400 font-bold uppercase italic">Ihnen direkt zugeordnet</p>
         </div>
 
-        <div class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6 relative group">
-            <div class="relative flex items-center justify-between">
+        <div class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-red-600 text-xs font-bold uppercase tracking-wider italic">Kritisch (< 90 Tage)</p>
-                    <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['critical_trainings'] ?? 0 }}</p>
+                    <p class="text-red-600 text-xs font-bold uppercase tracking-wider">Abgelaufen</p>
+                    <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['expired'] ?? 0 }}</p>
                 </div>
                 <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200">
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-orange-50 border border-orange-100 rounded-2xl shadow-sm p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-600 text-xs font-bold uppercase tracking-wider italic">Ablaufend (30T)</p>
+                    <p class="text-3xl font-black text-orange-700 mt-1">{{ $stats['warning'] ?? 0 }}</p>
+                </div>
+                <div class="bg-orange-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
                     <i class="fas fa-clock text-xl"></i>
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-red-500 font-bold uppercase">Handlungsbedarf</p>
         </div>
 
-        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm p-6">
+        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-emerald-600 text-xs font-bold uppercase tracking-wider">Zertifikate</p>
-                    <p class="text-3xl font-black text-emerald-700 mt-1">{{ $stats['total_certificates'] ?? 0 }}</p>
+                    <p class="text-indigo-600 text-xs font-bold uppercase tracking-wider">Geplant</p>
+                    <p class="text-3xl font-black text-indigo-700 mt-1">{{ $stats['planned'] ?? 0 }}</p>
                 </div>
-                <div class="bg-emerald-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
-                    <i class="fas fa-file-contract text-xl"></i>
+                <div class="bg-indigo-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
+                    <i class="fas fa-calendar-alt text-xl"></i>
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-emerald-600 font-bold uppercase">Gültige Nachweise</p>
         </div>
 
     </div>
@@ -65,7 +74,7 @@
         <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <h3 class="font-bold text-slate-800 flex items-center">
                 <i class="fas fa-list-ul text-blue-600 mr-2"></i>
-                Meine anstehenden Termine
+                Dringende Schulungstermine (Nächste 30 Tage)
             </h3>
         </div>
         <div class="overflow-x-auto">
@@ -88,15 +97,15 @@
                             <td class="px-6 py-4 text-slate-600 text-sm font-medium">{{ $training->expiry_date->format('d.m.Y') }}</td>
                             <td class="px-6 py-4 text-right">
                                 @php
-                                    $daysLeft = round(now()->diffInDays($training->expiry_date, false));
+                                    $daysLeft = round(now()->startOfDay()->diffInDays($training->expiry_date->startOfDay(), false));
                                 @endphp
                                 @if($daysLeft < 0)
                                     <span class="px-3 py-1 bg-red-600 text-white text-[10px] font-black rounded-full uppercase tracking-tighter">
                                         Abgelaufen ({{ abs($daysLeft) }} Tage)
                                     </span>
-                                @elseif($daysLeft <= 90)
+                                @elseif($daysLeft <= 30)
                                     <span class="px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
-                                        {{ $daysLeft }} Tage
+                                        Fällig in {{ $daysLeft }} Tagen
                                     </span>
                                 @else
                                     <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase tracking-tighter">
@@ -109,7 +118,7 @@
                         <tr>
                             <td colspan="4" class="px-6 py-12 text-center">
                                 <i class="fas fa-check-circle text-slate-200 text-4xl mb-3"></i>
-                                <p class="text-slate-400 text-sm font-medium">Keine anstehenden Termine für Ihre Mitarbeiter.</p>
+                                <p class="text-slate-400 text-sm font-medium">Keine kritischen Termine gefunden.</p>
                             </td>
                         </tr>
                     @endforelse
