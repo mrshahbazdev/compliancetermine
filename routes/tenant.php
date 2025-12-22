@@ -5,14 +5,13 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
-// Public Legal Pages (Accessed by everyone)
+use App\Http\Controllers\Tenant\LegalController;
+// prefix 'info' ko hata dein ya name ko 'legal' se shuru karein
 Route::group(['prefix' => 'info'], function() {
-    Route::get('/impressum', [App\Http\Controllers\Tenant\LegalController::class, 'impressum'])->name('tenant.legal.impressum');
-    Route::get('/datenschutz', [App\Http\Controllers\Tenant\LegalController::class, 'datenschutz'])->name('tenant.legal.datenschutz');
-    Route::get('/nutzungsbedingungen', [App\Http\Controllers\Tenant\LegalController::class, 'terms'])->name('tenant.legal.terms');
+    Route::get('/impressum', [LegalController::class, 'impressum'])->name('legal.impressum');
+    Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('legal.datenschutz');
+    Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 });
-
 // Tenant routes (accessed via subdomain.crm-tool.test)
 Route::middleware([
     'web',
