@@ -157,4 +157,51 @@ class TrainingController extends Controller
 
         return view('tenant.calendar.index', compact('events'));
     }
+    // Edit Form dikhane ke liye
+    public function edit(string $tenantId, Training $training)
+    {
+        $categories = Category::all();
+        return view('tenant.trainings.edit', compact('training', 'categories'));
+    }
+
+    // Data update karne ke liye
+    public function update(Request $request, string $tenantId, Training $training)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'last_event_date' => 'required|date',
+            'duration_days' => 'nullable|integer|min:1',
+            'certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480',
+        ]);
+
+        $trainingDate = \Carbon\Carbon::parse($request->last_event_date);
+        $days = (int) ($request->duration_days ?? 365);
+
+        // File Handling
+        if ($request->hasFile('certificate')) {
+            // Purani file delete karein agar maujood hai
+            if ($training->certificate_path) {
+                \Storage::disk('public')->delete($training->certificate_path);
+            }
+            $training->certificate_path = $request->file('certificate')->store("tenants/{$tenantId}/certificates", 'public');
+            $training->status = 'completed'; // Certificate aane par status complete
+        }
+
+        $training->category_id = $request->category_id;
+        $training->last_event_date = $trainingDate;
+        $training->expiry_date = $trainingDate->copy()->addDays($days);
+        $training->duration_days = $days;
+        $training->save();
+
+        return redirect()->route('tenant.trainings.index', [$tenantId, $training->employee_id])
+                        ->with('success', 'Eintrag erfolgreich aktualisiert!');
+    }
+    public function destroy(string $tenantId, Training $training)
+    {
+        if ($training->certificate_path) {
+            \Storage::disk('public')->delete($training->certificate_path);
+        }
+        $training->delete();
+        return redirect()->back()->with('success', 'Eintrag gelöscht!');
+    }
 }

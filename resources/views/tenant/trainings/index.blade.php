@@ -102,7 +102,7 @@
                                 <th class="px-8 py-5 text-center">Status</th>
                                 <th class="px-8 py-5">Datum</th>
                                 <th class="px-8 py-5">Ablaufdatum</th>
-                                <th class="px-8 py-5 text-right">Aktion</th>
+                                <th class="px-8 py-5 text-right">Aktionen</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
@@ -148,16 +148,36 @@
                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Frist</span>
                                     </div>
                                 </td>
-                                <td class="px-8 py-5 text-right">
-                                    @if($training->certificate_path)
-                                        <a href="{{ route('tenant.certificates.view', [request()->tenantId, $training->id]) }}" 
-                                        target="_blank" 
-                                        class="inline-flex items-center justify-center w-10 h-10 bg-slate-900 text-white rounded-2xl hover:bg-blue-600 shadow-lg transition transform hover:-translate-y-0.5"
-                                        title="Zertifikat ansehen">
-                                            <i class="fas fa-eye"></i> </a>
-                                    @else
-                                        <span class="text-slate-300 text-xs italic">N/A</span>
-                                    @endif
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center justify-end space-x-2">
+                                        @if($training->certificate_path)
+                                            <a href="{{ route('tenant.certificates.view', [request()->tenantId, $training->id]) }}" 
+                                            target="_blank" 
+                                            class="flex items-center justify-center w-8 h-8 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-900 hover:text-white transition shadow-sm"
+                                            title="Ansehen">
+                                                <i class="fas fa-eye text-xs"></i>
+                                            </a>
+                                        @endif
+
+                                        <a href="{{ route('tenant.trainings.edit', [request()->tenantId, $training->id]) }}" 
+                                        class="flex items-center justify-center w-8 h-8 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition shadow-sm"
+                                        title="Bearbeiten">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </a>
+
+                                        <form action="{{ route('tenant.trainings.destroy', [request()->tenantId, $training->id]) }}" 
+                                            method="POST" 
+                                            onsubmit="return confirm('Möchten Sie diesen Eintrag wirklich löschen?')"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="flex items-center justify-center w-8 h-8 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm"
+                                                    title="Löschen">
+                                                <i class="fas fa-trash-alt text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -167,7 +187,7 @@
                                         <i class="fas fa-folder-open text-3xl"></i>
                                     </div>
                                     <p class="text-slate-400 text-xs font-black uppercase tracking-widest italic leading-loose">
-                                        Keine Daten für diesen Mitarbeiter vorhanden.<br>Planen Sie jetzt die erste Schulung.
+                                        Keine Daten vorhanden.
                                     </p>
                                 </td>
                             </tr>

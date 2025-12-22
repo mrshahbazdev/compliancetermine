@@ -82,7 +82,8 @@ Route::prefix('tenant/{tenantId}')
             // Training Records
             Route::get('/employees/{employee}/trainings', [TrainingController::class, 'index'])->name('trainings.employee.index');
             Route::post('/employees/{employee}/trainings', [TrainingController::class, 'store'])->name('trainings.store');
-
+            Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])->name('trainings.edit');
+            Route::put('/trainings/{training}', [TrainingController::class, 'update'])->name('trainings.update');
             // Category View (Standard User sirf dekh sakta hai)
             Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
