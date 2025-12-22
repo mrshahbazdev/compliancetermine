@@ -17,12 +17,26 @@ use App\Http\Controllers\Tenant\Admin\{
     UserManagementController,
     SettingsController
 };
-
+use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
 | Public Central Routes
 |--------------------------------------------------------------------------
 */
+Route::get('/test-email', function () {
+    $targetEmail = 'mrshahbaznns@gmail.com';
+    
+    try {
+        Mail::raw('Hallo Shahbaz! Der SMTP Server auf compliancetermine.de funktioniert einwandfrei.', function ($message) use ($targetEmail) {
+            $message->to($targetEmail)
+                    ->subject('SMTP Test - ComplianceTermine');
+        });
+        
+        return "Email wurde erfolgreich an " . $targetEmail . " gesendet!";
+    } catch (\Exception $e) {
+        return "Fehler beim Versenden: " . $e->getMessage();
+    }
+});
 Route::get('/', function () {
     $tenant = request()->attributes->get('tenant');
     return view('welcome', [
