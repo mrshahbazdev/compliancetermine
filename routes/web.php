@@ -85,8 +85,9 @@ Route::prefix('tenant/{tenantId}')
             Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])->name('trainings.edit');
             Route::put('/trainings/{training}', [TrainingController::class, 'update'])->name('trainings.update');
             // Delete training route
+            // Delete training route - Prefix 'tenant.' pehle se group mein laga hua hai
             Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
-                ->name('tenant.trainings.destroy');
+                ->name('trainings.destroy');
             // Category View (Standard User sirf dekh sakta hai)
             Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
