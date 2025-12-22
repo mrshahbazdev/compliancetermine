@@ -68,6 +68,11 @@ Route::prefix('tenant/{tenantId}')
         // --- PROTECTED ROUTES (Admin & Standard User dono ke liye) ---
         Route::middleware(['auth'])->group(function () {
             
+            // Legal Pages Routes
+            Route::get('/impressum', [App\Http\Controllers\Tenant\LegalController::class, 'impressum'])->name('legal.impressum');
+            Route::get('/datenschutz', [App\Http\Controllers\Tenant\LegalController::class, 'datenschutz'])->name('legal.datenschutz');
+            Route::get('/nutzungsbedingungen', [App\Http\Controllers\Tenant\LegalController::class, 'terms'])->name('legal.terms');
+
             // Dashboard & Auth
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

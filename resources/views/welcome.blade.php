@@ -196,11 +196,31 @@
 
     <footer class="bg-white border-t border-slate-200 py-12">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-slate-500 font-medium">&copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.</p>
-            @if($tenant)
-                <p class="mt-3 text-xs text-slate-400 uppercase tracking-widest">
-                    Mandant: {{ $tenant->subdomain }}
-                </p>
+            <p class="text-slate-500 font-medium">
+                &copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.
+            </p>
+
+            <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
+                <a href="{{ route('tenant.legal.impressum', request()->tenantId) }}" 
+                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                    Impressum
+                </a>
+                <a href="{{ route('tenant.legal.datenschutz', request()->tenantId) }}" 
+                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                    Datenschutz
+                </a>
+                <a href="{{ route('tenant.legal.terms', request()->tenantId) }}" 
+                class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+                    Nutzungsbedingungen
+                </a>
+            </div>
+
+            @if(isset($tenant))
+                <div class="mt-6 pt-6 border-t border-slate-50">
+                    <p class="text-[10px] text-slate-300 uppercase tracking-[0.2em] font-black">
+                        Mandant: <span class="text-slate-400">{{ $tenant->subdomain }}</span>
+                    </p>
+                </div>
             @endif
         </div>
     </footer>
