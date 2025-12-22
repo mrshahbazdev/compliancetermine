@@ -6,12 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use App\Http\Controllers\Tenant\LegalController;
-// prefix 'info' ko hata dein ya name ko 'legal' se shuru karein
-Route::group(['prefix' => 'info'], function() {
-    Route::get('/impressum', [LegalController::class, 'impressum'])->name('legal.impressum');
-    Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('legal.datenschutz');
-    Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
-});
+
 // Tenant routes (accessed via subdomain.crm-tool.test)
 Route::middleware([
     'web',
@@ -19,7 +14,11 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     'tenant.check',
 ])->group(function () {
-    
+    Route::name('tenant.legal.')->group(function () {
+        Route::get('/impressum', [LegalController::class, 'impressum'])->name('impressum');
+        Route::get('/datenschutz', [LegalController::class, 'datenschutz'])->name('datenschutz');
+        Route::get('/nutzungsbedingungen', [LegalController::class, 'terms'])->name('terms');
+    });
     // Upgrade page (when subscription expired)
     Route::get('/upgrade', [App\Http\Controllers\Tenant\UpgradeController::class, 'index'])
         ->name('tenant.upgrade')
