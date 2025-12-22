@@ -201,15 +201,23 @@
             </p>
 
             <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
-                <a href="{{ route('tenant.legal.impressum', request()->tenantId) }}" 
+                @php
+                    // Check karein ke hum tenant context mein hain ya central
+                    $routePrefix = isset($tenant) ? 'tenant.legal.' : 'legal.';
+                    $routeParam = isset($tenant) ? ['tenantId' => $tenant->id] : [];
+                @endphp
+
+                <a href="{{ route($routePrefix . 'impressum', $routeParam) }}" 
                 class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                     Impressum
                 </a>
-                <a href="{{ route('tenant.legal.datenschutz', request()->tenantId) }}" 
+                
+                <a href="{{ route($routePrefix . 'datenschutz', $routeParam) }}" 
                 class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                     Datenschutz
                 </a>
-                <a href="{{ route('tenant.legal.terms', request()->tenantId) }}" 
+                
+                <a href="{{ route($routePrefix . 'terms', $routeParam) }}" 
                 class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                     Nutzungsbedingungen
                 </a>
