@@ -200,30 +200,25 @@
             &copy; {{ date('Y') }} ComplianceTermine. Alle Rechte vorbehalten.
         </p>
 
-        <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
-            @php
-                // Logic to determine if we are in a tenant context
-                // 'tenant' variable aksar middleware se aata hai
-                $isTenant = isset($tenant) && $tenant !== null;
-                
-                // Route names matching your routes/tenant.php and routes/web.php
-                $impressumRoute = $isTenant ? route('tenant.legal.impressum', ['tenantId' => $tenant->id]) : route('legal.impressum');
-                $datenschutzRoute = $isTenant ? route('tenant.legal.datenschutz', ['tenantId' => $tenant->id]) : route('legal.datenschutz');
-                $termsRoute = $isTenant ? route('tenant.legal.terms', ['tenantId' => $tenant->id]) : route('legal.terms');
-            @endphp
+        @php
+            // Check karein ke hum subdomain par hain ya central domain par
+            $isTenant = isset($tenant) && $tenant !== null;
+        @endphp
 
-            <a href="{{ $impressumRoute }}" 
-               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+        <div class="mt-4 flex flex-wrap justify-center items-center gap-6">
+            {{-- Tenant context mein parameters ki zaroorat nahi hoti Stancl Tenancy mein --}}
+            <a href="{{ $isTenant ? route('tenant.legal.impressum') : route('legal.impressum') }}" 
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                 Impressum
             </a>
             
-            <a href="{{ $datenschutzRoute }}" 
-               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+            <a href="{{ $isTenant ? route('tenant.legal.datenschutz') : route('legal.datenschutz') }}" 
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                 Datenschutz
             </a>
             
-            <a href="{{ $termsRoute }}" 
-               class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
+            <a href="{{ $isTenant ? route('tenant.legal.terms') : route('legal.terms') }}" 
+            class="text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest transition">
                 Nutzungsbedingungen
             </a>
         </div>
