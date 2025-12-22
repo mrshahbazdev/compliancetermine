@@ -193,8 +193,8 @@ class TrainingController extends Controller
         $training->duration_days = $days;
         $training->save();
 
-        return redirect()->route('tenant.trainings.index', [$tenantId, $training->employee_id])
-                        ->with('success', 'Eintrag erfolgreich aktualisiert!');
+        return redirect()->route('tenant.trainings.employee.index', [$tenantId, $training->employee_id])
+                ->with('success', 'Eintrag erfolgreich aktualisiert!');
     }
     public function destroy(string $tenantId, Training $training)
     {
