@@ -143,7 +143,7 @@ class TrainingController extends Controller
 
             return [
                 'title' => ($isPlanned ? '[P] ' : '') . $training->employee->name . ' - ' . $training->category->name,
-                'start' => $training->expiry_date->format('Y-m-d'),
+                'start' => $training->last_event_date->format('Y-m-d'),
                 'backgroundColor' => $color,
                 'borderColor' => $color,
                 'extendedProps' => [
