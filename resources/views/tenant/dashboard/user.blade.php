@@ -18,55 +18,64 @@
         </div>
     </div>
 
+    {{-- Klickbare Statistik-Karten --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        {{-- Mitarbeiter Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId]) }}" 
+           class="group bg-white border border-slate-200 rounded-2xl shadow-sm p-6 transition-all duration-300 hover:shadow-md hover:border-blue-300 hover:-translate-y-1 block">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Mitarbeiter</p>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider group-hover:text-blue-600 transition">Mitarbeiter</p>
                     <p class="text-3xl font-black text-slate-900 mt-1">{{ $stats['total_employees'] ?? 0 }}</p>
                 </div>
-                <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600">
+                <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
                     <i class="fas fa-users text-xl"></i>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <div class="bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6">
+        {{-- Abgelaufen / Kritisch Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId, 'status' => 'expired']) }}" 
+           class="group bg-red-50 border border-red-100 rounded-2xl shadow-sm p-6 transition-all duration-300 hover:shadow-md hover:bg-red-100/50 hover:-translate-y-1 block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-red-600 text-xs font-bold uppercase tracking-wider">Abgelaufen</p>
                     <p class="text-3xl font-black text-red-700 mt-1">{{ $stats['expired'] ?? 0 }}</p>
                 </div>
-                <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200">
+                <div class="bg-red-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-200 group-hover:scale-110 transition-transform">
                     <i class="fas fa-exclamation-triangle text-xl"></i>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <div class="bg-orange-50 border border-orange-100 rounded-2xl shadow-sm p-6">
+        {{-- Ablaufend Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId, 'status' => 'warning']) }}" 
+           class="group bg-orange-50 border border-orange-100 rounded-2xl shadow-sm p-6 transition-all duration-300 hover:shadow-md hover:bg-orange-100/50 hover:-translate-y-1 block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-orange-600 text-xs font-bold uppercase tracking-wider italic">Ablaufend (30T)</p>
                     <p class="text-3xl font-black text-orange-700 mt-1">{{ $stats['warning'] ?? 0 }}</p>
                 </div>
-                <div class="bg-orange-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
+                <div class="bg-orange-500 w-12 h-12 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                     <i class="fas fa-clock text-xl"></i>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm p-6">
+        {{-- Geplant Karte --}}
+        <a href="{{ route('tenant.calendar', ['tenantId' => request()->tenantId]) }}" 
+           class="group bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm p-6 transition-all duration-300 hover:shadow-md hover:bg-indigo-100/50 hover:-translate-y-1 block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-indigo-600 text-xs font-bold uppercase tracking-wider">Geplant</p>
                     <p class="text-3xl font-black text-indigo-700 mt-1">{{ $stats['planned'] ?? 0 }}</p>
                 </div>
-                <div class="bg-indigo-500 w-12 h-12 rounded-xl flex items-center justify-center text-white">
+                <div class="bg-indigo-500 w-12 h-12 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                     <i class="fas fa-calendar-alt text-xl"></i>
                 </div>
             </div>
-        </div>
+        </a>
 
     </div>
 
@@ -76,6 +85,7 @@
                 <i class="fas fa-list-ul text-blue-600 mr-2"></i>
                 Dringende Schulungstermine (Nächste 30 Tage)
             </h3>
+            <a href="{{ route('tenant.calendar', ['tenantId' => request()->tenantId]) }}" class="text-xs font-bold text-blue-600 hover:underline">Alle ansehen</a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left">
