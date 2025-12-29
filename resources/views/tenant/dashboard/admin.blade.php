@@ -26,10 +26,12 @@
         </div>
     </div>
 
+    {{-- Statistik-Karten Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        <a href="{{ route('tenant.employees.index', request()->tenantId) }}" 
-           class="group bg-white border border-slate-200 rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50 relative overflow-hidden">
+        {{-- Mitarbeiter Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId]) }}" 
+           class="group bg-white border border-slate-200 rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-500/50 relative overflow-hidden block">
             <div class="absolute -right-4 -bottom-4 text-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform group-hover:scale-110">
                 <i class="fas fa-users text-8xl"></i>
             </div>
@@ -47,7 +49,9 @@
             </div>
         </a>
 
-        <div class="group bg-red-600 border border-red-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-red-700 relative overflow-hidden">
+        {{-- Abgelaufen / Kritisch Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId, 'status' => 'expired']) }}" 
+           class="group bg-red-600 border border-red-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-red-700 relative overflow-hidden block">
             <div class="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full -translate-x-8 -translate-y-8 blur-2xl"></div>
             <div class="relative flex items-center justify-between">
                 <div class="space-y-1">
@@ -61,9 +65,11 @@
             <div class="mt-6 pt-4 border-t border-white/20 flex items-center text-[10px] font-bold text-white uppercase italic">
                 <i class="fas fa-bolt mr-2 text-yellow-300"></i> Kritische Fehler
             </div>
-        </div>
+        </a>
 
-        <div class="group bg-orange-500 border border-orange-600 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 relative overflow-hidden">
+        {{-- Ablaufend Karte --}}
+        <a href="{{ route('tenant.employees.index', ['tenantId' => request()->tenantId, 'status' => 'warning']) }}" 
+           class="group bg-orange-500 border border-orange-600 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 relative overflow-hidden block">
             <div class="relative flex items-center justify-between">
                 <div class="space-y-1">
                     <p class="text-orange-50 text-[11px] font-black uppercase tracking-widest opacity-80 italic">Ablaufend (30T)</p>
@@ -76,9 +82,11 @@
             <div class="mt-6 pt-4 border-t border-white/20 flex items-center text-[10px] font-bold text-white uppercase">
                 <i class="fas fa-hourglass-half mr-2"></i> Demnächst fällig
             </div>
-        </div>
+        </a>
 
-        <div class="group bg-indigo-600 border border-indigo-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 relative overflow-hidden text-white">
+        {{-- Geplant Karte --}}
+        <a href="{{ route('tenant.calendar', ['tenantId' => request()->tenantId]) }}" 
+           class="group bg-indigo-600 border border-indigo-700 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 relative overflow-hidden text-white block">
             <div class="relative flex items-center justify-between">
                 <div class="space-y-1">
                     <p class="text-indigo-100 text-[11px] font-black uppercase tracking-widest opacity-80">Geplant</p>
@@ -91,7 +99,7 @@
             <div class="mt-6 pt-4 border-t border-indigo-500/50 flex items-center text-[10px] font-bold text-indigo-100 uppercase">
                 <i class="fas fa-tasks mr-2"></i> Offene Termine
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-8">
@@ -108,7 +116,7 @@
                     </div>
                 </div>
                 <a href="{{ route('tenant.calendar', ['tenantId' => request()->tenantId]) }}" 
-                   class="bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition shadow-sm">
+                    class="bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition shadow-sm">
                     Kalender öffnen
                 </a>
             </div>
@@ -227,5 +235,8 @@
     .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
     .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
     * { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
+    
+    /* Stellt sicher, dass Links das Layout nicht zerschießen */
+    a.block { display: block; text-decoration: none; }
 </style>
 @endsection

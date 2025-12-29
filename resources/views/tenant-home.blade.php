@@ -16,7 +16,7 @@
                         <span class="text-3xl">🏢</span>
                         <h1 class="text-2xl font-bold">CRM Tool</h1>
                     </div>
-                    <a href="http://127.0.0.1:8000" target="_blank" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-50 transition">
+                    <a href="https://digitalpackt.de" target="_blank" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-50 transition">
                         🏠 Main Platform
                     </a>
                 </div>
@@ -72,7 +72,7 @@
                         <div class="text-6xl mb-4">🏢</div>
                         <p class="text-gray-500 text-lg mb-2">No active tenants found.</p>
                         <p class="text-sm text-gray-400">Create a subscription from the main platform.</p>
-                        <a href="http://127.0.0.1:8000" target="_blank" class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                        <a href="https://digitalpackt.de" target="_blank" class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
                             Go to Main Platform
                         </a>
                     </div>

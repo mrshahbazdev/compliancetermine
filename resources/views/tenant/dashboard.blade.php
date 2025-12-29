@@ -40,7 +40,7 @@
             <div class="max-w-7xl mx-auto">
                 <p class="text-yellow-700">
                     ⚠️ Your subscription expires in <strong>{{ $daysRemaining }} days</strong>.
-                    <a href="http://127.0.0.1:8000" class="underline font-semibold">Renew Now</a>
+                    <a href="https://digitalpackt.de" class="underline font-semibold">Renew Now</a>
                 </p>
             </div>
         </div>
@@ -49,7 +49,7 @@
             <div class="max-w-7xl mx-auto">
                 <p class="text-red-700">
                     ❌ Your subscription has expired. 
-                    <a href="http://127.0.0.1:8000" class="underline font-semibold">Renew Now</a>
+                    <a href="https://digitalpackt.de" class="underline font-semibold">Renew Now</a>
                 </p>
             </div>
         </div>
