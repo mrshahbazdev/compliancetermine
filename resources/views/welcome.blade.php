@@ -50,7 +50,7 @@
                             Dashboard
                         </a>
                     @else
-                        <a href="https://cip-tools.de/register" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                        <a href="https://digitalpackt.de/register" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
                             Jetzt anmelden
                         </a>
                     @endauth
@@ -79,7 +79,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="https://cip-tools.de/register" class="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-slate-800 transition shadow-2xl">
+                    <a href="https://digitalpackt.de/register" class="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-slate-800 transition shadow-2xl">
                         Jetzt kostenlos anmelden
                     </a>
                     <a href="#" class="w-full sm:w-auto bg-white border border-slate-200 text-slate-600 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-slate-50 transition">
@@ -201,7 +201,7 @@
             <div class="mt-24">
                 <h2 class="text-4xl font-extrabold text-slate-900 mb-6">Starten Sie jetzt und machen Sie <br>Compliance einfach und sicher.</h2>
                 <div class="flex flex-wrap justify-center gap-4">
-                    <a href="https://cip-tools.de/register" class="bg-blue-600 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-blue-700 transition shadow-2xl shadow-blue-300">
+                    <a href="https://digitalpackt.de/register" class="bg-blue-600 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-blue-700 transition shadow-2xl shadow-blue-300">
                         Jetzt registrieren
                     </a>
                 </div>
