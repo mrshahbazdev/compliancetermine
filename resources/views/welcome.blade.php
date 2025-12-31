@@ -52,12 +52,12 @@
                     <a href="#ablauf" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Ablauf</a>
                     
                     @auth
-                        {{-- Agar user logged in hai --}}
+                        {{-- Wenn Benutzer eingeloggt ist --}}
                         <a href="{{ route('tenant.dashboard', ['tenantId' => $tenant?->id ?? 'default']) }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
                             <i class="fas fa-chart-pie mr-2"></i> Dashboard
                         </a>
                     @else
-                        {{-- LOGIN LOGIC: Agar URL mein tenant hai toh specific login dikhayega --}}
+                        {{-- Login-Logik: Falls Tenant vorhanden, spezifischen Login-Link anzeigen --}}
                         @if(isset($tenant))
                             <a href="{{ route('tenant.login', ['tenantId' => $tenant->id]) }}" class="text-slate-600 hover:text-blue-600 font-bold transition flex items-center">
                                 <i class="fas fa-sign-in-alt mr-2 text-blue-600"></i> Login
@@ -65,7 +65,7 @@
                         @endif
 
                         <a href="https://cip-tools.de/register" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                            Jetzt anmelden
+                            Jetzt registrieren
                         </a>
                     @endauth
                 </div>
