@@ -40,17 +40,31 @@
                     <span class="text-2xl font-extrabold tracking-tight text-slate-900">
                         Compliance<span class="text-blue-600">Termine</span>
                     </span>
+                    @if(isset($tenant))
+                        <span class="ml-4 bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-xs font-bold border border-blue-200 uppercase">
+                            {{ $tenant->subdomain }}
+                        </span>
+                    @endif
                 </div>
                 
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#vorteile" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Vorteile</a>
                     <a href="#ablauf" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Ablauf</a>
+                    
                     @auth
+                        {{-- Agar user logged in hai --}}
                         <a href="{{ route('tenant.dashboard', ['tenantId' => $tenant?->id ?? 'default']) }}" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                            Dashboard
+                            <i class="fas fa-chart-pie mr-2"></i> Dashboard
                         </a>
                     @else
-                        <a href="https://digitalpackt.de/register" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                        {{-- LOGIN LOGIC: Agar URL mein tenant hai toh specific login dikhayega --}}
+                        @if(isset($tenant))
+                            <a href="{{ route('tenant.login', ['tenantId' => $tenant->id]) }}" class="text-slate-600 hover:text-blue-600 font-bold transition flex items-center">
+                                <i class="fas fa-sign-in-alt mr-2 text-blue-600"></i> Login
+                            </a>
+                        @endif
+
+                        <a href="https://cip-tools.de/register" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
                             Jetzt anmelden
                         </a>
                     @endauth
